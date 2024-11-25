@@ -1,0 +1,221 @@
+
+* {
+    box-sizing: border-box;
+    font-family: "Alegreya";
+    color: #5A002C;
+    margin: 0;
+    padding: 0;
+    }
+
+body {
+    /* color: #FFD700; */
+    background-color: #f2f2f2;
+    }
+   
+   
+/* ################### title ########################*/   
+   
+    
+#title {
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: .70fr .30fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    "tit1 tit2"
+    "tit1 tit3";
+    }
+
+h1 {
+    font-size: 6rem;
+    text-align: center;
+    align-self: center;
+    grid-area: tit1;
+    }
+    
+#title > h4 {
+    font-size: 1.4rem;
+    text-align: left;
+    align-self: end;
+    grid-area: tit2;
+    }
+    
+#title > h6 {
+    font-size: 1.2rem;
+    text-align: left;
+    align-self: beggin;
+    grid-area: tit3;
+    }   
+ 
+   
+/* ################### top ########################*/   
+       
+    
+#top_info {
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: .60fr .40fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    "top1 top2";
+    }
+     
+   
+/* ################### map ########################*/   
+   
+      
+#map_container {
+    grid-area: top1;
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: .1fr .4fr .4fr .1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    ". map1 map3 ."
+    ". map2 map4 ."
+    "map5 map5 map5 map5";
+    }
+    
+label:nth-child(1) {
+  grid-area: map1;
+    }
+       
+label:nth-child(2) {
+    grid-area: map3;
+    }
+    
+#map_type {
+  grid-area: map2;
+    }
+       
+#map_category {
+    grid-area: map4;
+    }
+
+#map_chart {
+    height: 30rem;
+    padding: 1rem;
+    grid-area: map5;
+    }
+     
+   
+/* ################### bar ########################*/   
+   
+  
+#bar_container {
+    grid-area: top2;
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: .8fr .2fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    "bar1 bar3"
+    "bar2 bar3"
+    "bar4 bar4"
+    "bar5 bar5";
+    }
+    
+#bar_container > h3 {
+    font-size: 1.6rem;
+    text-align: center;
+    align-self: center;
+    grid-area: bar1;
+    }
+    
+#bar_container > h5 {
+    font-size: 1.2rem;
+    text-align: center;
+    align-self: center;
+    grid-area: bar2;
+    }
+    
+#bar_container > button {
+    width: 70%;
+    height: auto;
+    padding: 1rem 0px;
+    margin: auto;
+    border: 2px solid #5A002C;
+    background: white;
+    font-weight: bold;
+    font-size: 1rem;
+    grid-area: bar3;
+    }
+    
+#bar_container > button:hover{
+    background: rgb(23, 129, 194);
+    }
+    
+#bar_visit {
+    height: 15rem;
+    padding: 1rem;
+    align-self: end;
+    grid-area: bar4;
+    }
+    
+#time_slider {
+    width: 90%;
+    padding: 1rem;
+    justify-self: center;
+    align-self: center;
+    grid-area: bar5;
+    }
+
+#time_slider .rc-slider-track {
+  background-color: indigo;
+}
+   
+/* ################### middle ########################*/   
+   
+  
+#midd_info {
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: .50fr .50fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    "mid1 mid2";
+    } 
+    
+#pop_graph {
+    padding: 1rem;
+    grid-area: mid1;
+    }
+    
+#scatterplot_corona {
+    padding: 1rem;
+    grid-area: mid2;
+    }   
+ 
+   
+/* ################### bottom ########################*/      
+  
+  
+#bottom_info {
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: .50fr .50fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    "bot1 bot2";
+    }   
+    
+#sanky_teaching {
+    padding: 1rem;
+    grid-area: bot1;
+    }
+    
+#art_consumption {
+    padding: 1rem;
+    grid-area: bot2;
+    }   
+           
+   
+/* ################### footer ########################*/   
+   
+  

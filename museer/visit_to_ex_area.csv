@@ -1,0 +1,69 @@
+ ; ; ;2018;2019;2020;2021;2022
+Men;;;;;;;
+Men;Local (hometown or nearby areas);;;;;;
+Men;Local (hometown or nearby areas);16-24 years;12;11;9;9;12
+Men;Local (hometown or nearby areas);25-34 years;18;19;9;16;17
+Men;Local (hometown or nearby areas);35-44 years;19;15;7;12;14
+Men;Local (hometown or nearby areas);45-54 years;14;13;6;8;11
+Men;Local (hometown or nearby areas);55-64 years;15;12;6;7;10
+Men;Local (hometown or nearby areas);65-74 years;19;16;9;10;14
+Men;Local (hometown or nearby areas);75 years and over;17;15;7;12;14
+Men;In Denmark (not local area);;;;;;
+Men;In Denmark (not local area);16-24 years;14;14;12;14;15
+Men;In Denmark (not local area);25-34 years;14;14;9;13;12
+Men;In Denmark (not local area);35-44 years;15;16;12;14;12
+Men;In Denmark (not local area);45-54 years;18;18;12;13;13
+Men;In Denmark (not local area);55-64 years;20;17;11;13;10
+Men;In Denmark (not local area);65-74 years;22;20;12;14;14
+Men;In Denmark (not local area);75 years and over;16;14;9;11;15
+Men;Abroad e.g. during vacation;;;;;;
+Men;Abroad e.g. during vacation;16-24 years;12;11;2;5;9
+Men;Abroad e.g. during vacation;25-34 years;10;9;4;6;7
+Men;Abroad e.g. during vacation;35-44 years;9;6;2;5;6
+Men;Abroad e.g. during vacation;45-54 years;9;11;2;5;6
+Men;Abroad e.g. during vacation;55-64 years;9;9;1;3;5
+Men;Abroad e.g. during vacation;65-74 years;8;7;1;3;6
+Men;Abroad e.g. during vacation;75 years and over;5;6;1;2;4
+Men;Visited a museum etc.;;;;;;
+Men;Visited a museum etc.;16-24 years;32;27;19;23;27
+Men;Visited a museum etc.;25-34 years;33;30;17;24;27
+Men;Visited a museum etc.;35-44 years;33;27;16;24;26
+Men;Visited a museum etc.;45-54 years;30;29;15;21;22
+Men;Visited a museum etc.;55-64 years;34;28;14;19;19
+Men;Visited a museum etc.;65-74 years;38;32;17;20;25
+Men;Visited a museum etc.;75 years and over;30;25;13;20;24
+Women;;;;;;;
+Women;Local (hometown or nearby areas);;;;;;
+Women;Local (hometown or nearby areas);16-24 years;16;16;13;16;17
+Women;Local (hometown or nearby areas);25-34 years;21;19;13;18;21
+Women;Local (hometown or nearby areas);35-44 years;18;16;7;12;17
+Women;Local (hometown or nearby areas);45-54 years;16;14;7;13;13
+Women;Local (hometown or nearby areas);55-64 years;21;18;8;13;13
+Women;Local (hometown or nearby areas);65-74 years;24;19;9;18;18
+Women;Local (hometown or nearby areas);75 years and over;19;14;8;12;19
+Women;In Denmark (not local area);;;;;;
+Women;In Denmark (not local area);16-24 years;20;20;15;19;16
+Women;In Denmark (not local area);25-34 years;19;17;11;13;12
+Women;In Denmark (not local area);35-44 years;19;18;13;16;15
+Women;In Denmark (not local area);45-54 years;21;21;13;17;17
+Women;In Denmark (not local area);55-64 years;24;21;11;16;18
+Women;In Denmark (not local area);65-74 years;26;21;10;18;20
+Women;In Denmark (not local area);75 years and over;19;13;8;11;16
+Women;Abroad e.g. during vacation;;;;;;
+Women;Abroad e.g. during vacation;16-24 years;14;10;2;9;12
+Women;Abroad e.g. during vacation;25-34 years;10;10;2;8;8
+Women;Abroad e.g. during vacation;35-44 years;9;9;2;4;6
+Women;Abroad e.g. during vacation;45-54 years;10;11;1;6;8
+Women;Abroad e.g. during vacation;55-64 years;11;10;1;4;7
+Women;Abroad e.g. during vacation;65-74 years;9;10;1;2;6
+Women;Abroad e.g. during vacation;75 years and over;5;5;0;2;4
+Women;Visited a museum etc.;;;;;;
+Women;Visited a museum etc.;16-24 years;39;35;25;36;38
+Women;Visited a museum etc.;25-34 years;38;35;21;29;32
+Women;Visited a museum etc.;35-44 years;35;34;18;25;28
+Women;Visited a museum etc.;45-54 years;37;33;17;28;28
+Women;Visited a museum etc.;55-64 years;42;35;16;26;29
+Women;Visited a museum etc.;65-74 years;45;36;15;30;32
+Women;Visited a museum etc.;75 years and over;35;23;13;19;28
+;;;;;;;
+Question to respondents: Where have you visited a museum or exhibition within the last three months;;;;;;;

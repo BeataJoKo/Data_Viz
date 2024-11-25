@@ -1,0 +1,101 @@
+ ; ; ;2018;2019;2020;2021;2022
+Men;;;;;;;
+Men;To see the building;;;;;;
+Men;To see the building;16-24 years;6;8;1;2;2
+Men;To see the building;25-34 years;8;10;3;2;3
+Men;To see the building;35-44 years;9;11;4;3;3
+Men;To see the building;45-54 years;8;10;2;3;3
+Men;To see the building;55-64 years;6;10;2;2;1
+Men;To see the building;65-74 years;7;11;2;2;2
+Men;To see the building;75 years and over;4;7;1;3;2
+Men;Exhibition;;;;;;
+Men;Exhibition;16-24 years;16;12;15;17;20
+Men;Exhibition;25-34 years;17;13;12;19;24
+Men;Exhibition;35-44 years;17;12;10;18;19
+Men;Exhibition;45-54 years;16;14;12;16;17
+Men;Exhibition;55-64 years;22;13;11;15;17
+Men;Exhibition;65-74 years;22;17;14;18;21
+Men;Exhibition;75 years and over;19;15;12;17;21
+Men;Lecture or concert;;;;;;
+Men;Lecture or concert;16-24 years;1;1;0;0;1
+Men;Lecture or concert;25-34 years;1;1;0;1;0
+Men;Lecture or concert;35-44 years;1;0;0;0;0
+Men;Lecture or concert;45-54 years;1;0;0;0;1
+Men;Lecture or concert;55-64 years;1;1;0;0;0
+Men;Lecture or concert;65-74 years;2;1;0;0;0
+Men;Lecture or concert;75 years and over;2;1;0;1;1
+Men;Conference or private event;;;;;;
+Men;Conference or private event;16-24 years;3;2;0;0;0
+Men;Conference or private event;25-34 years;2;2;0;0;0
+Men;Conference or private event;35-44 years;1;2;0;1;1
+Men;Conference or private event;45-54 years;2;2;0;0;1
+Men;Conference or private event;55-64 years;1;2;0;0;0
+Men;Conference or private event;65-74 years;2;2;0;0;0
+Men;Conference or private event;75 years and over;1;2;0;0;0
+Men;Cafe or restaurant visit;;;;;;
+Men;Cafe or restaurant visit;16-24 years;0;0;0;1;1
+Men;Cafe or restaurant visit;25-34 years;1;1;0;0;0
+Men;Cafe or restaurant visit;35-44 years;1;1;1;0;0
+Men;Cafe or restaurant visit;45-54 years;1;1;0;1;0
+Men;Cafe or restaurant visit;55-64 years;1;1;0;0;0
+Men;Cafe or restaurant visit;65-74 years;1;0;0;0;1
+Men;Cafe or restaurant visit;75 years and over;1;1;0;0;1
+Men;Other purpose;;;;;;
+Men;Other purpose;16-24 years;5;4;3;4;4
+Men;Other purpose;25-34 years;4;4;2;2;1
+Men;Other purpose;35-44 years;4;4;2;2;2
+Men;Other purpose;45-54 years;3;2;1;1;2
+Men;Other purpose;55-64 years;3;2;1;2;1
+Men;Other purpose;65-74 years;3;2;1;1;2
+Men;Other purpose;75 years and over;1;2;1;1;2
+Women;Other purpose;;;;;;
+Women;To see the building;;;;;;
+Women;To see the building;16-24 years;8;10;2;4;2
+Women;To see the building;25-34 years;9;11;3;4;3
+Women;To see the building;35-44 years;8;11;2;3;2
+Women;To see the building;45-54 years;8;12;2;3;3
+Women;To see the building;55-64 years;6;11;2;3;2
+Women;To see the building;65-74 years;6;8;1;2;2
+Women;To see the building;75 years and over;3;4;1;1;1
+Women;Exhibition;;;;;;
+Women;Exhibition;16-24 years;25;20;18;26;31
+Women;Exhibition;25-34 years;23;19;16;23;24
+Women;Exhibition;35-44 years;20;17;15;20;24
+Women;Exhibition;45-54 years;22;17;14;23;24
+Women;Exhibition;55-64 years;28;20;14;23;25
+Women;Exhibition;65-74 years;31;24;14;26;28
+Women;Exhibition;75 years and over;25;17;12;17;26
+Women;Lecture or concert;;;;;;
+Women;Lecture or concert;16-24 years;0;1;0;0;1
+Women;Lecture or concert;25-34 years;0;0;0;0;0
+Women;Lecture or concert;35-44 years;1;1;0;0;0
+Women;Lecture or concert;45-54 years;1;1;0;0;0
+Women;Lecture or concert;55-64 years;2;1;0;0;1
+Women;Lecture or concert;65-74 years;2;1;0;1;1
+Women;Lecture or concert;75 years and over;2;1;0;0;1
+Women;Conference or private event;;;;;;
+Women;Conference or private event;16-24 years;1;1;0;1;1
+Women;Conference or private event;25-34 years;2;1;0;0;0
+Women;Conference or private event;35-44 years;2;2;0;0;0
+Women;Conference or private event;45-54 years;2;1;0;1;0
+Women;Conference or private event;55-64 years;3;2;0;0;0
+Women;Conference or private event;65-74 years;3;3;0;0;0
+Women;Conference or private event;75 years and over;2;1;0;0;0
+Women;Cafe or restaurant visit;;;;;;
+Women;Cafe or restaurant visit;16-24 years;0;1;1;0;0
+Women;Cafe or restaurant visit;25-34 years;1;1;1;0;1
+Women;Cafe or restaurant visit;35-44 years;0;1;0;0;0
+Women;Cafe or restaurant visit;45-54 years;0;1;0;0;0
+Women;Cafe or restaurant visit;55-64 years;1;1;0;0;1
+Women;Cafe or restaurant visit;65-74 years;1;1;0;1;0
+Women;Cafe or restaurant visit;75 years and over;2;1;0;0;1
+Women;Other purpose;;;;;;
+Women;Other purpose;16-24 years;4;3;4;5;3
+Women;Other purpose;25-34 years;2;2;1;2;4
+Women;Other purpose;35-44 years;4;3;1;3;2
+Women;Other purpose;45-54 years;3;2;1;1;1
+Women;Other purpose;55-64 years;3;2;1;1;1
+Women;Other purpose;65-74 years;2;2;1;1;1
+Women;Other purpose;75 years and over;2;1;1;1;0
+;;;;;;;
+Question to the respondents: What was the main purpose of your visit? ;;;;;;;

@@ -1,0 +1,81 @@
+ ; ;2023Q1;2023Q2;2023Q3;2023Q4
+To see the building;;;;;
+To see the building;Men;2;2;5;4
+To see the building;Women;2;2;4;3
+To see the building;16-24 years;1;3;4;5
+To see the building;25-34 years;3;1;4;3
+To see the building;35-44 years;3;1;7;3
+To see the building;45-54 years;3;4;4;4
+To see the building;55-64 years;2;2;4;4
+To see the building;65-74 years;2;2;5;3
+To see the building;75 years and over;1;2;5;2
+Exhibition;;;;;
+Exhibition;Men;19;19;26;21
+Exhibition;Women;26;25;29;30
+Exhibition;16-24 years;26;25;28;31
+Exhibition;25-34 years;23;24;29;25
+Exhibition;35-44 years;22;19;26;24
+Exhibition;45-54 years;20;19;30;24
+Exhibition;55-64 years;19;21;24;26
+Exhibition;65-74 years;24;24;26;27
+Exhibition;75 years and over;23;24;27;24
+Concert;;;;;
+Concert;Men;0;0;0;0
+Concert;Women;1;1;0;0
+Concert;16-24 years;1;0;0;0
+Concert;25-34 years;0;1;0;0
+Concert;35-44 years;0;0;1;0
+Concert;45-54 years;0;0;0;0
+Concert;55-64 years;0;1;0;0
+Concert;65-74 years;1;1;0;1
+Concert;75 years and over;1;0;0;0
+Lecture;;;;;
+Lecture;Men;0;1;0;0
+Lecture;Women;0;1;0;0
+Lecture;16-24 years;0;1;0;0
+Lecture;25-34 years;0;0;0;1
+Lecture;35-44 years;1;1;0;0
+Lecture;45-54 years;0;1;0;0
+Lecture;55-64 years;0;0;0;0
+Lecture;65-74 years;0;0;0;0
+Lecture;75 years and over;0;0;0;0
+Conference;;;;;
+Conference;Men;1;0;0;0
+Conference;Women;1;0;0;0
+Conference;16-24 years;1;0;1;0
+Conference;25-34 years;1;0;0;0
+Conference;35-44 years;0;0;0;0
+Conference;45-54 years;0;0;0;0
+Conference;55-64 years;0;0;0;1
+Conference;65-74 years;0;0;0;0
+Conference;75 years and over;1;1;0;0
+Private event;;;;;
+Private event;Men;1;2;2;2
+Private event;Women;2;1;2;2
+Private event;16-24 years;4;3;3;3
+Private event;25-34 years;2;2;3;2
+Private event;35-44 years;2;2;2;2
+Private event;45-54 years;1;2;1;1
+Private event;55-64 years;0;1;1;1
+Private event;65-74 years;2;1;2;2
+Private event;75 years and over;1;1;2;2
+Cafe or restaurant visit;;;;;
+Cafe or restaurant visit;Men;0;0;0;0
+Cafe or restaurant visit;Women;0;0;0;0
+Cafe or restaurant visit;16-24 years;0;0;0;0
+Cafe or restaurant visit;25-34 years;0;0;0;0
+Cafe or restaurant visit;35-44 years;0;0;0;0
+Cafe or restaurant visit;45-54 years;0;0;0;0
+Cafe or restaurant visit;55-64 years;0;0;0;0
+Cafe or restaurant visit;65-74 years;0;0;0;0
+Cafe or restaurant visit;75 years and over;0;0;0;0
+Other purpose;;;;;
+Other purpose;Men;0;0;0;0
+Other purpose;Women;0;0;0;0
+Other purpose;16-24 years;0;0;0;0
+Other purpose;25-34 years;0;0;0;0
+Other purpose;35-44 years;0;0;0;0
+Other purpose;45-54 years;0;0;0;0
+Other purpose;55-64 years;0;0;0;0
+Other purpose;65-74 years;0;0;0;0
+Other purpose;75 years and over;0;0;0;0
