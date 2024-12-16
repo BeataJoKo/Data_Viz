@@ -89,8 +89,10 @@ df_art['Category'] = df_art['Category'].fillna('None')
 #df_cat = pd.melt(df_cat, id_vars=['Age','Sex', 'Category'], var_name='Year', value_name='Pop_Percent', ignore_index=True)
 
 #%%
+df_teaching = df_base[['Name', 'Category', 'Under_18_Teaching', 'Under_18_NO_teaching', 'Opening_Time', 'Year']]
 
 #%%
+df_teaching = pd.melt(df_teaching, id_vars=['Name', 'Category', 'Year'], value_vars=['Under_18_NO_teaching', 'Under_18_Teaching'], var_name='Teaching', value_name='Amount', ignore_index=True)
 
 #%%
 #print(cat_wide.columns)
