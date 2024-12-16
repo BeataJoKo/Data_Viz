@@ -210,7 +210,7 @@ label:nth-child(2) {
     grid-area: bot1;
     }
     
-#art_consumption {
+#distribution {
     padding: 1rem;
     grid-area: bot2;
     }   
