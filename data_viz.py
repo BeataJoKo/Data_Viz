@@ -19,6 +19,7 @@ import plotly.graph_objects as go
 from collections import Counter
 import math
 import pandas as pd
+import numpy as np
 #from dash_bootstrap_templates import load_figure_template
 
 #%% create Dash app
@@ -91,7 +92,7 @@ app.layout = html.Div([
     
     html.Div(id='bottom_info', children=[
         dcc.Graph(id='sanky_teaching'),
-        dcc.Graph(id='art_consumption')
+        dcc.Graph(id='distribution')
         ]),
     
     html.Div(id='footer', children=[
@@ -255,7 +256,7 @@ def update_pop(year_range):
                    showlegend = col == 'Kunstmuseum',
                    customdata=man[col],
                    hovertemplate = "%{y}: %{customdata}"))
-        colors = colors - 0.2
+       # colors = colors - 0.2
         
     colors = 1.0
     for col in woman.columns[1:]:
@@ -271,7 +272,7 @@ def update_pop(year_range):
                    legendgroup="Female",
                    showlegend = col == 'Kunstmuseum',
                    hovertemplate="%{y}: %{x}"))    
-        colors = colors - 0.2
+        #colors = colors - 0.2
 
     fig.update_layout(barmode='relative', 
                   yaxis_autorange='reversed',
@@ -300,8 +301,8 @@ def update_corona(map_cat):
     fig = go.Figure(
         data=[
             go.Scatter(
-                x=df['After'].values,
-                y=df['Before'].values,
+                x=df['Before'].values,
+                y=df['After'].values,
                 mode='markers',
                 hovertext=df['Name'],
                 marker=dict(
@@ -313,8 +314,8 @@ def update_corona(map_cat):
     
     fig.add_trace(
         go.Scatter(
-            x=[1315418],
-            y=[1512747],
+            x=[1512747],
+            y=[1315418],
             mode='markers',
             hovertext=['Louisiana Museum Of Modern Art'],
             marker=dict(
@@ -325,11 +326,109 @@ def update_corona(map_cat):
 
     fig.update_layout(
                   title_text='Museums Visitors Before and After Corona',
+                  shapes = [{'type': 'line', 
+                             'yref': 'paper', 
+                             'xref': 'paper', 
+                             'y0': 0, 
+                             'y1': 1, 
+                             'x0': 0, 
+                             'x1': 1, 
+                             'layer': 'below',
+                             'opacity': 0.2
+                             #'xaxis_range': [0, max(df['Before'])],   ??
+                             #'yaxis_range': [0, max(df['After'])]     ??
+                             }],
                   margin={"r": 0, "t": 0, "l": 0, "b": 0},
                   plot_bgcolor='#efefef',
                   paper_bgcolor = '#efefef'
                  )
     
+    return [fig]
+
+
+@app.callback(
+    [Output(component_id="sanky_teaching", component_property="figure")],
+    [Input(component_id='time_slider', component_property='value')]
+)
+def update_sankey(time_slider):
+    
+    df = util.teaching_data(data.df_teaching, ['Teaching', 'Category'], 'Amount')
+    
+    fig = go.Figure(
+        data=[
+            go.Sankey(
+                node = dict(
+                    pad = 15,
+                    thickness = 20,
+                    line = dict(color = "black", width = 0.5),
+                    label = df[0],
+                    color = ['green', 'blue', 'pink', 'orange', 'yellow', 'grey', 'violet']
+                    ),
+                link = dict(
+                    source = df[2] + [6, 6], # indices correspond to labels, eg A1, A2, A1, B1, ...
+                    target = df[1] + [0, 1],
+                    value = df[3] + [84347, 11168],
+                    color = ['rgba(0, 255, 0, 0.6)', 'rgba(0, 255, 0, 0.6)', 'rgba(0, 255, 0, 0.6)', 'rgba(0, 255, 0, 0.6)', 'rgba(0, 255, 0, 0.6)', 'rgba(0, 0, 255, 0.6)', 'rgba(0, 0, 255, 0.6)', 'rgba(0, 0, 255, 0.6)', 'rgba(0, 0, 255, 0.6)', 'rgba(0, 0, 255, 0.6)', 'rgb(255, 0, 0, 1)', 'rgba(255, 0, 0, 1)']
+                    
+        ))])
+    
+    fig.update_layout(
+                  title_text='Teaching and No Teaching groups undrer 18 years',
+                  margin={"r": 0, "t": 0, "l": 0, "b": 0},
+                  font_size=10,
+                  plot_bgcolor='#efefef',
+                  paper_bgcolor = '#efefef'
+                 )
+
+    return [fig]
+
+
+@app.callback(
+    [Output(component_id="distribution", component_property="figure")],
+    [Input(component_id='time_slider', component_property='value')]
+)
+def update_dist(time_slider):
+    
+    df = util.name_agg(data.df_visit, 'Visit_Exhibition', [2018, 2023])
+
+# produce histogram data wiht numpy
+    count, index = np.histogram(df['Visit_Exhibition'], bins=100)
+    fig = go.Figure(
+        data=[
+            go.Scatter(
+                x=index, 
+                y=count,
+                line=dict(width = 1.5, shape='hvh'))])
+    
+    fig.update_yaxes(
+    showgrid=True,
+    ticks="inside",
+    tickson="boundaries",
+    ticklen=0,
+    showline=False,
+    #linewidth=1,
+    #linecolor='black',
+    mirror=True,
+    zeroline=False)
+
+    fig.update_xaxes(
+    showgrid=True,
+    ticks="inside",
+    tickson="boundaries",
+    ticklen=0,
+    showline=False,
+    #linewidth=1,
+    #linecolor='black',
+    mirror=True,
+    zeroline=False)
+
+    
+    fig.update_layout(
+        title_text='Some Distribution',
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        plot_bgcolor='#efefef',
+        paper_bgcolor = '#efefef')
+
     return [fig]
 
 
