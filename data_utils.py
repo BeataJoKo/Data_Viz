@@ -120,6 +120,70 @@ def corona_data(df):
 #dd = corona_data(df_visit)
 
 #%%
+# https://plotly.com/blog/sankey-diagrams/
+
+def teaching_data(df: pd.DataFrame, columns: list, sankey_link_weight: str):
+
+    # list of list: each list are the set of nodes in each tier/column
+    column_values = [df[col] for col in columns]
+
+    # this generates the labels for the sankey by taking all the unique values
+    labels = sum([list(node_values.unique()) for node_values in column_values],[])
+
+    # initializes a dict of dicts (one dict per tier) 
+    link_mappings = {col: {} for col in columns}
+
+    # each dict maps a node to unique number value (same node in different tiers
+    # will have different nubmer values
+    i = 0
+    for col, nodes in zip(columns, column_values):
+        for node in nodes.unique():
+            link_mappings[col][node] = i
+            i = i + 1
+
+    # specifying which coluns are serving as sources and which as sources
+    # ie: given 3 df columns (col1 is a source to col2, col2 is target to col1 and 
+    # a source to col 3 and col3 is a target to col2
+    source_nodes = column_values[: len(columns) - 1]
+    target_nodes = column_values[1:]
+    source_cols = columns[: len(columns) - 1]
+    target_cols = columns[1:]
+    links = []
+
+    # loop to create a list of links in the format [((src,tgt),wt),(),()...]
+    for source, target, source_col, target_col in zip(source_nodes, target_nodes, source_cols, target_cols):
+        for val1, val2, link_weight in zip(source, target, df[sankey_link_weight]):
+            links.append(
+                (
+                    (
+                        link_mappings[source_col][val1],
+                        link_mappings[target_col][val2]
+       ),
+       link_weight,
+    )
+             )
+
+    # creating a dataframe with 2 columns: for the links (src, tgt) and weights
+    df_links = pd.DataFrame(links, columns=["link", "weight"])
+
+    # aggregating the same links into a single link (by weight)
+    df_links = df_links.groupby(by=["link"], as_index=False).agg({"weight": sum})
+
+    # generating three lists needed for the sankey visual
+    sources = [val[0] for val in df_links["link"]]
+    targets = [val[1] for val in df_links["link"]]
+    weights = [round(x) for x in list(df_links["weight"])]
+
+    return labels, sources, targets, weights
+
+#%%
+
+#dd = teaching_data(df_teaching, ['Teaching', 'Category'], 'Amount')
+
+#%%
+#print(dd[2] + [1, 1])
+
+#%%
 #ddd = dd.loc[192]
 #print(ddd)
 
