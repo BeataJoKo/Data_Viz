@@ -73,6 +73,7 @@ app.layout = html.Div([
                 html.H3(f"Here comes museum name {'...'}"),
                 html.H5(f"..and some more informations {'...'}"),
                 html.Button("Reset", id = "reset_all"),
+                html.Button("Toggle Metric", id="toggle_metric", n_clicks=0),  # Add Toggle Button - Mathias
            # ]),
             dcc.Graph(id='bar_visit'),
             dcc.RangeSlider(
@@ -192,42 +193,53 @@ def update_map(selected_map, map_category, current_map_state):
     return [fig]
 
 
+
 @app.callback(
     [Output(component_id="bar_visit", component_property="figure")],
-    [Input(component_id='time_slider', component_property='value')]
+    [Input(component_id='time_slider', component_property='value'),
+     Input(component_id='map_category', component_property='value'),
+     Input(component_id='toggle_metric', component_property='n_clicks'),
+     Input(component_id='map_chart', component_property='clickData')]  # New input
 )
-def update_bar(year_range):  
+def update_bar(year_range, map_category, n_clicks, clickData):
+    selected_kommune = None
+    if clickData and 'points' in clickData:
+        selected_kommune = clickData['points'][0]['hovertext']
 
-    df, colors = util.year_agg(data.df_visit, year_range)
+    # Filter based on year, map_category and Municipality
+    df_filtered = data.df_visit[
+        (data.df_visit['Year'] >= year_range[0]) &
+        (data.df_visit['Year'] <= year_range[1])
+    ]
     
+    if map_category != "All museums":
+        df_filtered = df_filtered[df_filtered['Category'] == map_category]
+    if selected_kommune:  # Filter further if a kommune is clicked
+        df_filtered = df_filtered[df_filtered['Kommune'] == selected_kommune]
+
+    # Toggle between two metrics
+    y_column = 'Visit_Exhibition' if n_clicks % 2 == 0 else 'Visitors_Exhibition_per_opening_hour'
+    y_title = 'Visit Exhibition' if n_clicks % 2 == 0 else 'Visitors per Opening Hour'
+    df_agg = df_filtered.groupby('Year', as_index=False)[y_column].sum()
+    # Create the barplot
     fig = go.Figure(
         data=[go.Bar(
-            x=df['Year'], 
-            y=df['Visit_Exhibition'],
-            hovertext=df['Visit_Exhibition']
-            )])
-    
-    fig = go.Figure()
-    fig.add_trace(
-        go.Bar(
-            x=df['Year'], 
-            y=df['Visit_Exhibition'],
-            hovertext=df['Visit_Exhibition'],
-            marker={'opacity': colors}
-            ))
+            x=df_agg['Year'], 
+            y=df_agg[y_column],
+            hovertext=df_agg[y_column]
+        )]
+    )
     
     fig.update_traces(marker_color='rgb(89,0,43)', 
                       marker_line_color='rgb(8,48,107)',
-                      #opacity=0.9,
                       marker_line_width=1.5) 
     
-    #fig.data[0].marker.color = ('red','red','red', 'red')
-    
     fig.update_layout(
-        title_text='Yearly Visitors on Expositions in Museums',
+        title_text=f'Yearly {y_title} for {map_category}',
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
         plot_bgcolor='#efefef',
-        paper_bgcolor = '#efefef')
+        paper_bgcolor='#efefef',
+    )
     
     return [fig]
 
