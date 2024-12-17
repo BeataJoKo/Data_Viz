@@ -65,7 +65,7 @@ def name_agg(df, cloumn_name, year_range):
 #%%
 def year_agg(df, year_range):
     #dd = df.loc[(df['Year'] >= min(year_range)) & (df['Year'] <= max(year_range))]
-    dd = df.groupby(['Year'])[['Visit_Exhibition', 'Visit_Place', 'Opening_Time']].sum().reset_index()
+    dd = df.groupby(['Year'])[['Visit_Exhibition', 'Visit_Place', 'Opening_Time','Visitors_Exhibition_per_opening_hour']].sum().reset_index()
     mintime = min(year_range)
     maxtime = max(year_range)
     time = list(dd['Year'].unique())
