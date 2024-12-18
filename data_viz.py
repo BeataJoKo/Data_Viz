@@ -88,6 +88,27 @@ app.layout = html.Div([
     
     html.Div(id='midd_info', children=[
         dcc.Graph(id='pop_graph'),
+        html.Label('Chose what to compare:'),
+        html.H4('On the X-axis:'),
+        dcc.Dropdown(
+            id='corona_map',
+            options=[
+                {'label': 'Before Covid-19', 'value': 'Before Covid-19'},
+                {'label': 'After Covid-19', 'value': 'After Covid-19'},
+                {'label': 'During Covid-19', 'value': 'During Covid-19'}
+                ],
+            value='Before Covid-19',
+            clearable= False),
+        html.H4('On the Y-axis:'),
+        dcc.Dropdown(
+            id='corona_map_2',
+            options=[
+                {'label': 'Before Covid-19', 'value': 'Before Covid-19'},
+                {'label': 'After Covid-19', 'value': 'After Covid-19'},
+                {'label': 'During Covid-19', 'value': 'During Covid-19'}
+                ],
+            value='After Covid-19',
+            clearable= False),
         dcc.Graph(id='scatterplot_corona')
         ]),
     
@@ -304,57 +325,73 @@ def update_pop(year_range):
         
 @app.callback(
     [Output(component_id="scatterplot_corona", component_property="figure")],
-    [Input(component_id='map_category', component_property='value')]
+    [Input(component_id='corona_map', component_property='value'),
+     Input(component_id='corona_map_2', component_property='value')]
 )
-def update_corona(map_cat):
+def update_corona(x_axis, y_axis):
     
     df = util.corona_data(data.df_visit)
     
+    
+    max_limit = max(df[x_axis].max(), df[y_axis].max())
+
+    # Create scatter plot
     fig = go.Figure(
         data=[
             go.Scatter(
-                x=df['Before'].values,
-                y=df['After'].values,
+                x=df[x_axis].values,
+                y=df[y_axis].values,
                 mode='markers',
                 hovertext=df['Name'],
                 marker=dict(
                     color='rgb(46,54,144)',
                     size=df['scale'].values,
-                    showscale=True
-                    )
-            )])  
-    
-    fig.add_trace(
-        go.Scatter(
-            x=[1512747],
-            y=[1315418],
-            mode='markers',
-            hovertext=['Louisiana Museum Of Modern Art'],
-            marker=dict(
-                color='rgb(250,175,67)',
-                size=[30],
-                showscale=True
-                )))
+                    showscale=False
+                ) ,
+                hovertemplate=(
+                "<b>Name:</b> %{hovertext}<br>" +  
+                f"<b>{x_axis}:</b>"+" %{x}<br>" +       
+                f"<b>{y_axis}:</b>"+" %{y}<br>" +       
+                "<extra></extra>"                
+                )
+            )
+        ]
+    )
 
-    fig.update_layout(
-                  title_text='Museums Visitors Before and After Corona',
-                  shapes = [{'type': 'line', 
-                             'yref': 'paper', 
-                             'xref': 'paper', 
-                             'y0': 0, 
-                             'y1': 1, 
-                             'x0': 0, 
-                             'x1': 1, 
-                             'layer': 'below',
-                             'opacity': 0.2
-                             #'xaxis_range': [0, max(df['Before'])],   ??
-                             #'yaxis_range': [0, max(df['After'])]     ??
-                             }],
-                  margin={"r": 0, "t": 0, "l": 0, "b": 0},
-                  plot_bgcolor='#efefef',
-                  paper_bgcolor = '#efefef'
-                 )
     
+    fig.update_layout(
+        title_text=f'Attendance: {x_axis} vs {y_axis}',
+        shapes = [
+    {
+        'type': 'line',      
+        'yref': 'paper',    
+        'xref': 'paper',    
+        'y0': 0,             
+        'y1': 1,             
+        'x0': 0,             
+        'x1': 1,            
+        'layer': 'below',    
+        'opacity': 0.2       
+    }
+],
+        xaxis=dict(
+            title=x_axis,
+            range=[0, max_limit * 1.1],  
+            constrain="domain"           
+        ),
+        yaxis=dict(
+            title=y_axis,
+            range=[0, max_limit * 1.1],  
+            constrain="domain"           
+        ),
+        margin={"r": 10, "t": 50, "l": 30, "b": 10},
+        plot_bgcolor='#efefef',
+        paper_bgcolor='#efefef'
+    )
+
+    
+   
+
     return [fig]
 
 
