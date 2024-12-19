@@ -70,7 +70,7 @@ print(count)
 df = pd.DataFrame(data, columns =['Name', 'Url'])
 
 #%%
-df.to_excel('museum_websites.xlsx', sheet='scrapped')
+df.to_excel('museum_websites.xlsx', sheet_name='scrapped')
 
 #%%
 
