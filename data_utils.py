@@ -104,17 +104,19 @@ def corona_data(df):
     dd.columns = idx
     dd = dd.fillna(0)
     data = dd[['Name_', 'Category_']]
-    data['Before'] = dd['Visit_Exhibition_2018'] + dd['Visit_Exhibition_2019']
-    data['Corona'] = dd['Visit_Exhibition_2020'] + dd['Visit_Exhibition_2021']
-    data['After'] = dd['Visit_Exhibition_2022'] + dd['Visit_Exhibition_2023']
-    data['Before'] = data['Before'].astype('int')
-    data['Corona'] = data['Corona'].astype('int')
-    data['After'] = data['After'].astype('int')
-    data.columns = ['Name', 'Category', 'Before', 'Corona', 'After']
-    scaler = MinMaxScaler(feature_range=(3,30))
-    data['scale'] = scaler.fit_transform(data['Corona'].values.reshape(-1, 1))
+    data['Before Covid-19'] = dd['Visit_Exhibition_2018'] + dd['Visit_Exhibition_2019']
+    data['During Covid-19'] = dd['Visit_Exhibition_2020'] + dd['Visit_Exhibition_2021']
+    data['After Covid-19'] = dd['Visit_Exhibition_2022'] + dd['Visit_Exhibition_2023']
+    data['Before Covid-19'] = data['Before Covid-19'].astype('int')
+    data['During Covid-19'] = data['During Covid-19'].astype('int')
+    data['After Covid-19'] = data['After Covid-19'].astype('int')
+    data.columns = ['Name', 'Category','Before Covid-19', 'During Covid-19', 'After Covid-19']
+    scaler = MinMaxScaler(feature_range=(3, 30))
+    data['scale'] = scaler.fit_transform(data[['Before Covid-19', 'During Covid-19', 'After Covid-19']].mean(axis=1).values.reshape(-1,1))
     data['scale'] = [math.ceil(x) for x in data['scale']]
+
     return data
+
 
 #%%
 #dd = corona_data(df_visit)
