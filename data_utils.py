@@ -63,18 +63,25 @@ def name_agg(df, cloumn_name, year_range):
 #dd = name_agg(df_visit, 'Visit_Exhibition', [2018, 2023])
 
 #%%
-def year_agg(df, year_range):
+def year_agg(df, year_range, y_column):
     #dd = df.loc[(df['Year'] >= min(year_range)) & (df['Year'] <= max(year_range))]
-    dd = df.groupby(['Year'])[['Visit_Exhibition', 'Visit_Place', 'Opening_Time','Visitors_Exhibition_per_opening_hour']].sum().reset_index()
+    dd = df.groupby('Year', as_index=False)[y_column].sum()
+    #dd = df.groupby(['Year'])[['Visit_Exhibition', 'Visit_Place', 'Opening_Time','Visitors_Exhibition_per_opening_hour']].sum().reset_index()
     mintime = min(year_range)
     maxtime = max(year_range)
-    time = list(dd['Year'].unique())
+    time = [x for x in range(2018, 2024, 1)]
     time.sort()
+    for i in time:
+        if i not in dd['Year'].values:
+            dd.loc[len(dd)] = [i, 0]
+    dd = dd.sort_values('Year')
     color = [0.9 if (year >= mintime) & (year <= maxtime) else 0.3 for year in time]
     return dd, color
 
 #%%
-#dd = year_agg(df_visit, [2018, 2021])
+#dd = year_agg(df_visit[df_visit['Name'] == 'Ordrupgårdsamlingen'], [2018, 2021], 'Visit_Exhibition')
+
+#%%
 
 #%%
 def reshape_cat(df, sex):
@@ -82,7 +89,7 @@ def reshape_cat(df, sex):
     dd = dd.pivot(index=['Year', 'Age'], columns=['Category']).reset_index()
     idx = [dd.columns.get_level_values(0)[i]+dd.columns.get_level_values(1)[i] for i in range(len(dd.columns))]
     dd.columns = [i.replace('Percent_', '') for i in idx]
-    dd = round(dd.groupby(['Age'])[['Kunstmuseum', 'Kulturhistorisk museum', 'Naturhistorisk museum', 'Blandet', 'Museumslignende institution']].mean().reset_index(), 1)
+    dd = round(dd.groupby(['Age'])[['Art museum', 'Cultural History Museum', 'Natural History Museum', 'Other']].mean().reset_index(), 1)
     dd = pd.concat([dd.iloc[1:], dd.iloc[:1]])
     return dd
 
@@ -104,19 +111,18 @@ def corona_data(df):
     dd.columns = idx
     dd = dd.fillna(0)
     data = dd[['Name_', 'Category_']]
-    data['Before Covid-19'] = dd['Visit_Exhibition_2018'] + dd['Visit_Exhibition_2019']
-    data['During Covid-19'] = dd['Visit_Exhibition_2020'] + dd['Visit_Exhibition_2021']
-    data['After Covid-19'] = dd['Visit_Exhibition_2022'] + dd['Visit_Exhibition_2023']
-    data['Before Covid-19'] = data['Before Covid-19'].astype('int')
-    data['During Covid-19'] = data['During Covid-19'].astype('int')
-    data['After Covid-19'] = data['After Covid-19'].astype('int')
-    data.columns = ['Name', 'Category','Before Covid-19', 'During Covid-19', 'After Covid-19']
-    scaler = MinMaxScaler(feature_range=(3, 30))
-    data['scale'] = scaler.fit_transform(data[['Before Covid-19', 'During Covid-19', 'After Covid-19']].mean(axis=1).values.reshape(-1,1))
+    data['Before'] = dd['Visit_Exhibition_2018'] + dd['Visit_Exhibition_2019']
+    data['During'] = dd['Visit_Exhibition_2020'] + dd['Visit_Exhibition_2021']
+    data['After'] = dd['Visit_Exhibition_2022'] + dd['Visit_Exhibition_2023']
+    data['Before'] = data['Before'].astype('int')
+    data['During'] = data['During'].astype('int')
+    data['After'] = data['After'].astype('int')
+    data['average'] = dd[['Visit_Exhibition_2018', 'Visit_Exhibition_2019', 'Visit_Exhibition_2020', 'Visit_Exhibition_2021', 'Visit_Exhibition_2022', 'Visit_Exhibition_2023']].mean(axis=1)
+    data.columns = ['Name', 'Category', 'Before', 'During', 'After', 'Average']
+    scaler = MinMaxScaler(feature_range=(3,30))
+    data['scale'] = scaler.fit_transform(data['Average'].values.reshape(-1, 1))
     data['scale'] = [math.ceil(x) for x in data['scale']]
-
     return data
-
 
 #%%
 #dd = corona_data(df_visit)
@@ -124,7 +130,7 @@ def corona_data(df):
 #%%
 # https://plotly.com/blog/sankey-diagrams/
 
-def teaching_data(df: pd.DataFrame, columns: list, sankey_link_weight: str):
+def teaching_data(df: pd.DataFrame, columns: list, sankey_link_weight: str, highlight_data=None):
 
     # list of list: each list are the set of nodes in each tier/column
     column_values = [df[col] for col in columns]
@@ -175,18 +181,32 @@ def teaching_data(df: pd.DataFrame, columns: list, sankey_link_weight: str):
     sources = [val[0] for val in df_links["link"]]
     targets = [val[1] for val in df_links["link"]]
     weights = [round(x) for x in list(df_links["weight"])]
+    
+    # violet, grey, bordo, orange, red
+    colors = ['rgba(46,54,144,1)', 'rgba(56,62,66,1)', 'rgba(89,0,43,1)', 'rgba(250,175,67,1)', 'rgb(221,69,60,1)']
+    node_col = [colors[1] if x == 'No Teaching' else colors[0] if x == 'Teaching' else colors[2] for x in labels]
+    link_col = ['rgba(56,62,66,0.2)' if val[0] == 0 else 'rgba(46,54,144,0.2)' for val in df_links["link"]]
+    hov_link_col = ['rgba(56,62,66,0.8)' if val[0] == 0 else 'rgba(46,54,144,0.8)' for val in df_links["link"]]
+    hov_data = [labels[val] for val in targets]
+    
+    if highlight_data:
+        dd = df[df['Name'] == highlight_data]
+        targets = targets + [link_mappings['Category'][dd['Category'].unique()[0]], link_mappings['Category'][dd['Category'].unique()[0]]]
+        dd = dd.groupby('Teaching', as_index=False)[sankey_link_weight].sum()
+        sources = sources + [link_mappings['Teaching'][dd['Teaching'][0]], link_mappings['Teaching'][dd['Teaching'][1]]]
+        weights = weights + [round(dd['Amount'][0]), round(dd['Amount'][1])]
+        node_col = node_col + [colors[1], colors[0], colors[2]]
+        link_col = link_col + [colors[4], colors[4]]
+        hov_link_col = hov_link_col + ['rgba(250,175,67,0.4)', 'rgba(250,175,67,0.4)']
+        hov_data = hov_data + [highlight_data, highlight_data]
 
-    return labels, sources, targets, weights
+    return labels, sources, targets, weights, node_col, link_col, hov_link_col, hov_data
 
 #%%
-
 #dd = teaching_data(df_teaching, ['Teaching', 'Category'], 'Amount')
+#ddd = teaching_data(df_teaching, ['Teaching', 'Category'], 'Amount', 'Aros Aarhus Kunstmuseum')
 
 #%%
-#print(dd[2] + [1, 1])
+#dd = pd.DataFrame(df_visit[['Name', 'Kommune', 'Url', 'Category']].value_counts().reset_index(name='Counts'))
 
 #%%
-#ddd = dd.loc[192]
-#print(ddd)
-
-
