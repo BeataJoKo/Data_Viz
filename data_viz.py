@@ -157,9 +157,8 @@ def reset_all_filters(reset_all):
     [Input(component_id='map_type', component_property='value'),
      Input(component_id='map_category', component_property='value'),
      Input(component_id='reset_all', component_property='n_clicks')],
-     Input(component_id='time_slider', component_property='value')],
-    [State(component_id='map_chart', component_property='figure')]
-)
+     Input(component_id='time_slider', component_property='value')
+    [State(component_id='map_chart', component_property='figure')])
 def update_map(selected_map, map_category, reset_all,year_range, current_map_state):
     
     # Toggle reset
