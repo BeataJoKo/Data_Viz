@@ -322,23 +322,24 @@ def update_url(clickData, map_cat, map_type, reset_all):
     [Output(component_id="bar_visit", component_property="figure")],
     [Input(component_id='time_slider', component_property='value'),
      Input(component_id='map_category', component_property='value'),
+     Input(component_id='map_type', component_property='value'),  
      Input(component_id='toggle_metric', component_property='n_clicks'),
      Input(component_id='map_chart', component_property='clickData'),
-     Input(component_id='map_type', component_property='value'),  
      Input(component_id='reset_all', component_property='n_clicks')]
 )
-def update_bar(year_range, map_category, n_clicks, clickData, map_type, reset_all):
-    
+
+def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all):
     # Toggle reset
     if reset_all % 2 == 0:
         year_range = [2018, 2023]
         map_category = 'All museums'
         map_type = 'exhibition'
-        select_museum = None  
+        selected_name = None  
         selected_kommune = None
         title = "All museums"
         clickData = None
-    
+
+
     selected_kommune = None
     selected_name = None
     if clickData and 'points' in clickData:
@@ -360,41 +361,33 @@ def update_bar(year_range, map_category, n_clicks, clickData, map_type, reset_al
         df_filtered = df_filtered[df_filtered['Kommune'] == selected_kommune]
     if selected_name:  # Filter further if a museum is clicked
         df_filtered = df_filtered[df_filtered['Name'] == selected_name]
-    # Toggle between two metrics
+
+    # Toggle between two metrics by checking if it has been clicked an even number of times
     y_column = 'Visit_Exhibition' if n_clicks % 2 == 0 else 'Visitors_Exhibition_per_opening_hour'
-    y_title = 'Visitors on Exhibition' if n_clicks % 2 == 0 else 'Visitors per Opening Hour'
-    #df_agg = df_filtered.groupby('Year', as_index=False)[y_column].sum()
-    df_agg, colors = util.year_agg(df_filtered, year_range, y_column)
+    y_title = 'Visit Exhibition' if n_clicks % 2 == 0 else 'Visitors per Opening Hour'
+    df_agg = df_filtered.groupby('Year', as_index=False)[y_column].sum()
     # Create the barplot
     fig = go.Figure(
         data=[go.Bar(
             x=df_agg['Year'], 
             y=df_agg[y_column],
-            hovertext=df_agg[y_column],
-            marker={'opacity': colors},
-            hovertemplate=(
-            #"<b>Name:</b> %{hovertext}<br>" +  
-            f"<b>In </b>"+" %{x}<br>" +       
-            f"<b>{y_title} </b>"+" %{y}<br>" +       
-            "<extra></extra>"                
-            )
+            hovertext=df_agg[y_column]
         )]
     )
     
     fig.update_traces(marker_color='rgb(89,0,43)', 
-                      #marker_line_color='rgb(8,48,107)',
+                      marker_line_color='rgb(8,48,107)',
                       marker_line_width=1.5) 
     
-    fig.update_xaxes({'range': (2017.5, 2023.5), 'autorange': False})
-    
     fig.update_layout(
-        title_text=f'Yearly {y_title} for {title}',
-        margin={"r": 0, "t": 50, "l": 0, "b": 0},
+        title_text=f'Yearly {y_title} for {map_category}',
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
         plot_bgcolor='#efefef',
         paper_bgcolor='#efefef',
     )
     
     return [fig]
+
 
 
 @app.callback(
