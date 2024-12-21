@@ -11,6 +11,26 @@ body {
     /* color: #FFD700; */
     background-color: #f2f2f2;
     }
+    
+button {
+    width: 70%;
+    height: auto;
+    padding: 0.8rem 0;
+    margin: auto;
+    border: 2px solid #5A002C;
+    background: white;
+    font-weight: bold;
+    font-size: 1rem;
+    grid-area: map6;
+    }
+    
+button:hover{
+    background: rgba(56 ,62, 66, 0.2);
+    }
+    
+.hidden{
+    display: none;
+}
    
    
 /* ################### title ########################*/   
@@ -26,7 +46,7 @@ body {
     "tit1 tit2"
     "tit1 tit3";
     }
-
+    
 h1 {
     font-size: 6rem;
     text-align: center;
@@ -36,6 +56,7 @@ h1 {
     
 #title > h4 {
     font-size: 1.4rem;
+    font-weight: normal;
     text-align: left;
     align-self: end;
     grid-area: tit2;
@@ -43,6 +64,7 @@ h1 {
     
 #title > h6 {
     font-size: 1.2rem;
+    font-weight: normal;
     text-align: left;
     align-self: beggin;
     grid-area: tit3;
@@ -74,99 +96,80 @@ h1 {
     grid-template-columns: .1fr .4fr .4fr .1fr;
     grid-template-rows: auto;
     grid-template-areas:
-    ". map1 map3 ."
-    ". map2 map4 ."
-    "map5 map5 map5 map5";
+    ". map1 map3 map6 ."
+    ". map2 map4 map6 ."
+    "map5 map5 map5 map5 map5";
     }
     
-label:nth-child(1) {
+#map_container > label:nth-child(1) {
   grid-area: map1;
     }
        
-label:nth-child(2) {
+#map_container > label:nth-child(2) {
     grid-area: map3;
     }
     
 #map_type {
+  width: 80%;
   grid-area: map2;
     }
        
 #map_category {
+    width: 80%;
     grid-area: map4;
+    }
+    
+#map_container > button {
+    grid-area: map6;
     }
 
 #map_chart {
-    height: 30rem;
-    padding: 1rem;
+    height: 20rem;
+    padding: 0.5rem 2rem;
     grid-area: map5;
     }
-     
+ 
+    
+/* ################### iframe ########################*/   
    
-/* ################### bar ########################*/   
-   
-  
-#bar_container {
+      
+#myframe {
     grid-area: top2;
     width: 100%;
     height: auto;
     display: grid;
-    grid-template-columns: .8fr .2fr;
+    grid-template-columns: 1fr;
     grid-template-rows: auto;
     grid-template-areas:
-    "bar1 bar3"
-    "bar2 bar3"
-    "bar4 bar4"
-    "bar5 bar5";
+    "mus1"
+    "mus2"
+    "mus3";
     }
     
-#bar_container > h3 {
+#myframe > h3 {
     font-size: 1.6rem;
     text-align: center;
     align-self: center;
-    grid-area: bar1;
+    grid-area: mus1;
     }
     
-#bar_container > h5 {
+#myframe > h5 {
     font-size: 1.2rem;
     text-align: center;
     align-self: center;
-    grid-area: bar2;
+    grid-area: mus2;
     }
     
-#bar_container > button {
-    width: 70%;
-    height: auto;
-    padding: 1rem 0px;
-    margin: auto;
-    border: 2px solid #5A002C;
-    background: white;
-    font-weight: bold;
-    font-size: 1rem;
-    grid-area: bar3;
-    }
-    
-#bar_container > button:hover{
-    background: rgb(23, 129, 194);
-    }
-    
-#bar_visit {
+#myframe > iframe {
     height: 15rem;
-    padding: 1rem;
-    align-self: end;
-    grid-area: bar4;
-    }
-    
-#time_slider {
-    width: 90%;
-    padding: 1rem;
+    width: 100%;
+    padding: 0.5rem 2rem;
+    border: 0px solid red;
     justify-self: center;
     align-self: center;
-    grid-area: bar5;
-    }
+    grid-area: mus3;
+    } 
 
-#time_slider .rc-slider-track {
-  background-color: indigo;
-}
    
 /* ################### middle ########################*/   
    
@@ -175,23 +178,119 @@ label:nth-child(2) {
     width: 100%;
     height: auto;
     display: grid;
-    grid-template-columns: .50fr .50fr;
+    grid-template-columns: .60fr .40fr;
     grid-template-rows: auto;
     grid-template-areas:
     "mid1 mid2";
     } 
+  
+  
+/* ################### corona ########################*/
     
-#pop_graph {
-    padding: 1rem;
+    
+#corona_container {
     grid-area: mid1;
+    width: 100%;
+    height: auto;
+    display: grid;
+    padding: 1rem 2rem;
+    grid-template-columns: .25fr .25fr .25fr .25fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    ". cor1 cor1 ."
+    "cor2 cor3 cor4 cor5"
+    "cor6 cor6 cor6 cor6";
+    }
+    
+#corona_container > h4 {
+    font-size: 1rem;
+    font-weight: normal;
+    text-align: center;
+    align-self: center;
+    grid-area: cor1;
+    }
+    
+#corona_container > label:nth-child(2) {
+    justify-self: right;
+    align-self: center;
+    margin-right: 1rem;
+    grid-area: cor2;
+    }
+    
+#corona_container > label:nth-child(3) {
+    justify-self: right;
+    align-self: center;
+    margin-right: 1rem;
+    grid-area: cor4;
+    }
+    
+#corona_map {
+  width: 80%;
+  grid-area: cor3;
+    }
+       
+#corona_map_2 {
+    width: 80%;
+    grid-area: cor5;
     }
     
 #scatterplot_corona {
-    padding: 1rem;
-    grid-area: mid2;
-    }   
- 
+    height: 30rem;
+    padding: 1rem 0rem;
+    grid-area: cor6;
+    }  
    
+    
+/* ################### bar ########################*/   
+   
+  
+#bar_container {
+    grid-area: mid2;
+    width: 100%;
+    height: auto;
+    padding: 0.5rem 1rem;
+    display: grid;
+    grid-template-columns: .75fr .25fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    ". bar1"
+    "bar2 bar2"
+    "bar3 bar3"
+    "bar4 bar4";
+    }
+    
+#bar_container > button {
+    align-self: end;
+    grid-area: bar1;
+    }
+    
+#bar_visit {
+    height: 14rem;
+    padding: 1rem;
+    align-self: end;
+    grid-area: bar2;
+    }
+    
+#time_slider {
+    width: 90%;
+    padding: 1rem;
+    justify-self: center;
+    align-self: begin;
+    grid-area: bar3;
+    }
+
+#time_slider .rc-slider-track {
+/*  background-color: indigo; */
+  background-color: rgb(89,0,43);
+}
+
+#distribution {
+    height: 14rem;
+    padding: 1rem;
+    grid-area: bar4;
+    }   
+
+ 
 /* ################### bottom ########################*/      
   
   
@@ -206,16 +305,53 @@ label:nth-child(2) {
     }   
     
 #sanky_teaching {
-    padding: 1rem;
+    height: 25rem;
+    padding: 0.5rem 2rem 2rem 2rem;
     grid-area: bot1;
     }
     
-#distribution {
-    padding: 1rem;
+#pop_graph {
+    height: 25rem;
+    padding: 0.5rem 2rem 2rem 1rem;
     grid-area: bot2;
-    }   
+    }
            
    
 /* ################### footer ########################*/   
    
-  
+#footer {
+    width: 100%;
+    height: auto;
+    display: grid;
+    padding: 2rem 0rem 1rem 0rem;
+    grid-template-columns: .10 .30fr .30fr ,10fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+    "foot1 foot2 . ."
+    "foot3 foot4 foot6 foot6";
+    } 
+    
+#footer p{
+    color: rgba(56,62,66,1);
+    }
+    
+p:nth-child(1) {
+    text-align: center;
+    grid-area: foot1;
+    }
+p:nth-child(2) {
+    text-align: left;
+    grid-area: foot2;
+    }
+p:nth-child(3) {
+    text-align: center;
+    grid-area: foot3;
+    }
+p:nth-child(4) {
+    text-align: left;
+    grid-area: foot4;
+    }
+p:nth-child(5) {
+    text-align: center;
+    grid-area: foot6;
+    }
