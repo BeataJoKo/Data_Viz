@@ -526,7 +526,6 @@ def update_corona(x_axis, y_axis, reset_all):
 
     return [fig]
 
-
 @app.callback(
     [Output(component_id="sanky_teaching", component_property="figure")],
     [Input(component_id='time_slider', component_property='value'),
@@ -548,13 +547,15 @@ def update_sankey(time_slider, map_cat, clickData, map_type, reset_all):
     
     selected_kommune = None
     select_museum = None
-    
-    if map_type == 'exhibition':
-        if clickData and 'points' in clickData:
-            select_museum = clickData['points'][0]['hovertext']
-    else:
-        if clickData and 'points' in clickData:
+    if clickData and 'points' in clickData:
+        if map_type == 'kommune_loc':  # Choroplethmapbox case
             selected_kommune = clickData['points'][0]['hovertext']
+        elif map_type == 'exhibition':  # Scattermapbox case
+            select_museum = clickData['points'][0]['customdata'][0]
+            print(f"Selected Name: {select_museum}")
+
+
+
 
     # Filter based on year, map_category and Municipality
     df_filtered = data.df_teaching[
@@ -568,13 +569,14 @@ def update_sankey(time_slider, map_cat, clickData, map_type, reset_all):
         years = str(time_slider[0]) + ' - ' + str(time_slider[1])
     
     title = 'all museums'
-    
     if map_cat != "All museums":
         df_filtered = df_filtered[df_filtered['Category'] == map_cat]
         title = map_cat
     if selected_kommune:  # Filter further if a kommune is clicked
         df_filtered = df_filtered[df_filtered['Kommune'] == selected_kommune]
         title = selected_kommune
+    if select_museum:  # Filter further if a museum is clicked
+        df_filtered = df_filtered[df_filtered['Name'] == select_museum]
         
     df = util.teaching_data(df_filtered, ['Teaching', 'Category'], 'Amount')
     
@@ -616,6 +618,7 @@ def update_sankey(time_slider, map_cat, clickData, map_type, reset_all):
                  )
 
     return [fig]
+
 
 
 @app.callback(
