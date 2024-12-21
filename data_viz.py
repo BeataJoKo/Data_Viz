@@ -157,90 +157,110 @@ def reset_all_filters(reset_all):
     [Input(component_id='map_type', component_property='value'),
      Input(component_id='map_category', component_property='value'),
      Input(component_id='reset_all', component_property='n_clicks')],
+     Input(component_id='time_slider', component_property='value')],
     [State(component_id='map_chart', component_property='figure')]
 )
-def update_map(selected_map, map_category, reset_all, current_map_state):
+def update_map(selected_map, map_category, reset_all,year_range, current_map_state):
     
     # Toggle reset
     if reset_all % 2 == 0:
         selected_map = 'exhibition'
         map_category = 'All museums'
     
-    df = data.df_visit
-    df_agg_loc = util.kommune_agg(data.df_visit, 'Visit_Place', data.dt_mun)
-    #df_agg_ex = util.kommune_agg(data.df_visit, 'Visit_Exhibition', data.dt_mun)
-    
+    df = data.df_visit[
+        (data.df_visit['Year'] >= year_range[0]) &
+        (data.df_visit['Year'] <= year_range[1])
+    ]
+    if map_category != "All museums":
+        df = df[df['Category'] == map_category]
+    #df = data.df_visit
+    df_agg_loc = util.kommune_agg(df, 'Visit_Place', data.dt_mun)
+
     initial_zoom = 5.6
     initial_center = {'lat': 56.30205043365613, 'lon': 11.153154691145753}
-    
+
+    # Preserve zoom and center if user interacts with the map
     if current_map_state:
         current_zoom = current_map_state['layout']['mapbox']['zoom']
         current_center = current_map_state['layout']['mapbox']['center']
-        fig = current_map_state
     else:
         current_zoom = initial_zoom
         current_center = initial_center
-        fig = go.Figure() # create a new figure
-        
 
-        
+    fig = go.Figure()
+
     if selected_map == 'exhibition':
-        df_agg_year = util.name_agg(df, 'Visit_Exhibition', [2018, 2023])
+        # Aggregate and categorize data
+        df_agg_year = util.name_agg(df, 'Visit_Exhibition', year_range)
         limits = util.quantile_lim(df_agg_year, 'Visit_Exhibition')
-        
+
         for lim in limits:
-            df_agg_year.loc[(df_agg_year['Visit_Exhibition'] >= lim[0]) & (df_agg_year['Visit_Exhibition']<= lim[1]), "type"] = str(lim[0]) + ' - ' + str(lim[1])        
-        #colors = ["royalblue","crimson","lightseagreen","orange","lightgrey"]
-    
+            df_agg_year.loc[
+                (df_agg_year['Visit_Exhibition'] >= lim[0]) & 
+                (df_agg_year['Visit_Exhibition'] <= lim[1]), 
+                "type"
+            ] = str(lim[0]) + ' - ' + str(lim[1])
 
-        fig = px.scatter_mapbox(df_agg_year,
-                                lat="lat",
-                                lon="lon",
-                                hover_name="Name",
-                                hover_data=['Category', 'Visit_Exhibition'],
-                                mapbox_style="carto-positron",
-                                #color='Visit_Exhibition',
-                                color="type", 
-                                size='scale',
-                                #size_max=30,
-                                zoom=current_zoom,
-                                center=current_center,
-                                #color_continuous_scale=color_scale,
-                                )
+        fig.add_trace(
+            go.Scattermapbox(
+                lat=df_agg_year['lat'],
+                lon=df_agg_year['lon'],
+                mode='markers',
+                marker=go.scattermapbox.Marker(
+                    size=df_agg_year['scale'],
+                    #colorsrc=str(df_agg_year['type']),
+                    opacity=0.7,
+                ),
+                customdata=df_agg_year[['Name', 'Category', 'Visit_Exhibition']].fillna(0).values,
+                hovertemplate=(
+                    "<b>Name:</b> %{customdata[0]}<br>"
+                    "<b>Category:</b> %{customdata[1]}<br>"
+                    "<b>Visit Exhibition:</b> %{customdata[2]}<br>"
+                    "<extra></extra>"
+               )
+            )
+        )
 
-        #fig.update_traces(selector=dict(mode='markers'))
- 
         fig.update_layout(
-            title_text = 'Visitors on Exhibitions',
+            title_text='Visitors on Exhibitions',
+            mapbox=dict(
+                style="carto-positron",
+                center=current_center,
+                zoom=current_zoom
+            ),
             margin={"r": 0, "t": 50, "l": 0, "b": 0},
             plot_bgcolor='#efefef',
-            paper_bgcolor = '#efefef'
+            paper_bgcolor='#efefef',
         )
-        fig.update_coloraxes(colorbar_title='Visitors on Exhibition')
 
-    else:
-        min_value = 0
-        max_value = max(df_agg_loc['VisitCount'])
+    else:  # kommune_loc map
+        # Add choropleth mapbox layer for location data
+        fig.add_trace(
+            go.Choroplethmapbox(
+                geojson=data.kommune_geojson,
+                locations=df_agg_loc['Location'],
+                z=df_agg_loc['VisitCount'],
+                featureidkey='properties.kode',
+                colorscale=[[0, 'rgb(255, 255, 255)'], [1, 'rgb(245, 28, 28)']],
+                zmin=0,
+                zmax=df_agg_loc['VisitCount'].max(),
+                marker=dict(opacity=0.7),
+                hovertext=df_agg_loc['Kommune'],
+                name="Number of visitors in exibition"
+            )
+        )
 
-        fig = px.choropleth_mapbox(df_agg_loc,
-                                    geojson=data.kommune_geojson,
-                                    color='VisitCount',
-                                    hover_name='Kommune',
-                                    locations='Location',
-                                    featureidkey='properties.kode',
-                                    center=current_center,
-                                    mapbox_style="carto-positron",
-                                    zoom=current_zoom,
-                                    #color_continuous_scale=color_scale,
-                                    range_color=[min_value, max_value]
-                                    )
         fig.update_layout(
-                        title_text = 'Visitors at Museums\' Location',
-                        margin={"r": 0, "t": 50, "l": 0, "b": 0},
-                        plot_bgcolor='#efefef',
-                        paper_bgcolor = '#efefef'
-                        )
-        fig.update_coloraxes(colorbar_title='Visitors')
+            title_text="Visitors at Museums' Location",
+            mapbox=dict(
+                style="carto-positron",
+                center=current_center,
+                zoom=current_zoom
+            ),
+            margin={"r": 0, "t": 50, "l": 0, "b": 0},
+            plot_bgcolor='#efefef',
+            paper_bgcolor='#efefef',
+        )
 
     return [fig]
 
@@ -320,34 +340,26 @@ def update_bar(year_range, map_category, n_clicks, clickData, map_type, reset_al
         clickData = None
     
     selected_kommune = None
-    select_museum = None
-    title = "All museums"
-    
-    if map_type == 'exhibition':
-        if clickData and 'points' in clickData:
-            select_museum = clickData['points'][0]['hovertext']
-    else:
-        if clickData and 'points' in clickData:
+    selected_name = None
+    if clickData and 'points' in clickData:
+        if map_type == 'kommune_loc':  # Choroplethmapbox case
             selected_kommune = clickData['points'][0]['hovertext']
+        elif map_type == 'exhibition':  # Scattermapbox case
+            selected_name = clickData['points'][0]['customdata'][0]
+            print(f"Selected Name: {selected_name}")
 
     # Filter based on year, map_category and Municipality
-    #df_filtered = data.df_visit[
-    #    (data.df_visit['Year'] >= year_range[0]) &
-    #    (data.df_visit['Year'] <= year_range[1])
-    #]
-    df_filtered = data.df_visit
+    df_filtered = data.df_visit[
+        (data.df_visit['Year'] >= year_range[0]) &
+        (data.df_visit['Year'] <= year_range[1])
+    ]
     
     if map_category != "All museums":
         df_filtered = df_filtered[df_filtered['Category'] == map_category]
-        title = map_category
     if selected_kommune:  # Filter further if a kommune is clicked
         df_filtered = df_filtered[df_filtered['Kommune'] == selected_kommune]
-        title = selected_kommune
-    if select_museum:  # Filter further if a museum is clicked
-        df_filtered = df_filtered[df_filtered['Name'] == select_museum]
-        map_category = df_filtered['Category'].values[0]
-        title = select_museum
-
+    if selected_name:  # Filter further if a museum is clicked
+        df_filtered = df_filtered[df_filtered['Name'] == selected_name]
     # Toggle between two metrics
     y_column = 'Visit_Exhibition' if n_clicks % 2 == 0 else 'Visitors_Exhibition_per_opening_hour'
     y_title = 'Visitors on Exhibition' if n_clicks % 2 == 0 else 'Visitors per Opening Hour'
