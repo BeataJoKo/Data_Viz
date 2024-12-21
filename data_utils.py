@@ -63,18 +63,13 @@ def name_agg(df, cloumn_name, year_range):
 #dd = name_agg(df_visit, 'Visit_Exhibition', [2018, 2023])
 
 #%%
-def year_agg(df, year_range, y_column):
+def year_agg(df, year_range):
     #dd = df.loc[(df['Year'] >= min(year_range)) & (df['Year'] <= max(year_range))]
-    dd = df.groupby('Year', as_index=False)[y_column].sum()
-    #dd = df.groupby(['Year'])[['Visit_Exhibition', 'Visit_Place', 'Opening_Time','Visitors_Exhibition_per_opening_hour']].sum().reset_index()
+    dd = df.groupby(['Year'])[['Visit_Exhibition', 'Visit_Place', 'Opening_Time','Visitors_Exhibition_per_opening_hour']].sum().reset_index()
     mintime = min(year_range)
     maxtime = max(year_range)
-    time = [x for x in range(2018, 2024, 1)]
+    time = list(dd['Year'].unique())
     time.sort()
-    for i in time:
-        if i not in dd['Year'].values:
-            dd.loc[len(dd)] = [i, 0]
-    dd = dd.sort_values('Year')
     color = [0.9 if (year >= mintime) & (year <= maxtime) else 0.3 for year in time]
     return dd, color
 
