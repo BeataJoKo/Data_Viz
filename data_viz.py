@@ -79,21 +79,21 @@ app.layout = html.Div([
             dcc.Dropdown(
                 id='corona_map',
                 options=[
-                    {'label': 'Before Covid-19', 'value': 'Before'},
-                    {'label': 'After Covid-19', 'value': 'After'},
-                    {'label': 'During Covid-19', 'value': 'During'}
+                    {'label': 'Before Covid-19', 'value': 'Before Covid-19'},
+                    {'label': 'After Covid-19', 'value': 'After Covid-19'},
+                    {'label': 'During Covid-19', 'value': 'During Covid-19'}
                     ],
-                value='Before',
+                value='Before Covid-19',
                 clearable= False
                 ),
             dcc.Dropdown(
                 id='corona_map_2',
                 options=[
-                    {'label': 'Before Covid-19', 'value': 'Before'},
-                    {'label': 'After Covid-19', 'value': 'After'},
-                    {'label': 'During Covid-19', 'value': 'During'}
+                    {'label': 'Before Covid-19', 'value': 'Before Covid-19'},
+                    {'label': 'After Covid-19', 'value': 'After Covid-19'},
+                    {'label': 'During Covid-19', 'value': 'During Covid-19'}
                     ],
-                value='After',
+                value='After Covid-19',
                 clearable= False
                 ),
             dcc.Graph(id='scatterplot_corona')
@@ -147,8 +147,8 @@ def reset_all_filters(reset_all):
     time_slider = [2018, 2023]
     toggle_metric = 0
     map_chart = None
-    corona_map = 'Before'
-    corona_map_2 = 'After'
+    corona_map = 'Before Covid-19'
+    corona_map_2 = 'After Covid-19'
     return reset_all, selected_map, map_category, time_slider, toggle_metric, map_chart, corona_map, corona_map_2
                      
 
@@ -461,15 +461,9 @@ def update_pop(year_range, reset_all):
      ]
 )
 def update_corona(x_axis, y_axis, reset_all):
-    default_x = 'Before Covid-19'
-    default_y = 'After Covid-19'
-
-    if reset_all is not None and reset_all % 2 == 0:
-        x_axis = default_x
-        y_axis = default_y
     
     
-    df = util.corona_data(data.df_visit)
+    df = util.corona_data2(data.df_visit)
     
     
     max_limit = max(df[x_axis].max(), df[y_axis].max())
