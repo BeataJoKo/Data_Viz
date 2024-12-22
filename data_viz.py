@@ -523,7 +523,7 @@ def update_corona(x_axis, y_axis, reset_all):
     
    
     
-    return[fig, x_axis, y_axis]
+    return[fig]
 
 @app.callback(
     [Output(component_id="sanky_teaching", component_property="figure")],
