@@ -78,20 +78,23 @@ def year_agg(df, year_range):
 
 #%%
 
+%%
 #%%
-def reshape_cat(df, sex):
+def reshape_cat(df, sex, years):
     dd = df[df['Sex'] == sex].drop(['Sex'], axis=1)
+    dd = dd[dd['Year'].isin(years)]
     dd = dd.pivot(index=['Year', 'Age'], columns=['Category']).reset_index()
     idx = [dd.columns.get_level_values(0)[i]+dd.columns.get_level_values(1)[i] for i in range(len(dd.columns))]
     dd.columns = [i.replace('Percent_', '') for i in idx]
-    dd = round(dd.groupby(['Age'])[['Art museum', 'Cultural History Museum', 'Natural History Museum', 'Other']].mean().reset_index(), 1)
+    dd = round(dd.groupby(['Age'])[['Kunstmuseum', 'Kulturhistorisk museum', 'Naturhistorisk museum', 'Blandet', 'Museumslignende institution']].mean().reset_index(), 1)
     dd = pd.concat([dd.iloc[1:], dd.iloc[:1]])
     return dd
 
 def gender_data(df, year_range):
     df = pd.melt(df, id_vars=['Age','Sex', 'Category'], var_name='Year', value_name='Percent_', ignore_index=True) 
-    man = reshape_cat(df, 'Men')
-    woman = reshape_cat(df, 'Women')     
+    years = list(map(str, range(min(year_range), max(year_range) + 1)))
+    man = reshape_cat(df, 'Men', years)
+    woman = reshape_cat(df, 'Women', years)     
     return man, woman
 
 #%%
