@@ -458,7 +458,7 @@ def update_pop(year_range, reset_all):
     [Input(component_id='corona_map', component_property='value'),
      Input(component_id='corona_map_2', component_property='value'),
      Input(component_id='reset_all', component_property='n_clicks'),
-     Inout(coponent_id='map_category', component_property='value')]
+     ]
 )
 def update_corona(x_axis, y_axis, reset_all):
     default_x = 'Before Covid-19'
@@ -528,6 +528,8 @@ def update_corona(x_axis, y_axis, reset_all):
         paper_bgcolor='#efefef'
     )
 
+    
+   
     
     return[fig, x_axis, y_axis]
 
