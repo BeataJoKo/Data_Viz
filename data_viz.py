@@ -406,14 +406,10 @@ def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all)
 
 @app.callback(
     [Output(component_id="pop_graph", component_property="figure")],
-    [Input(component_id='time_slider', component_property='value'),
-     Input(component_id='reset_all', component_property='n_clicks')]
+    [Input(component_id='time_slider', component_property='value')]
 )
 def update_pop(year_range, reset_all):  
     
-    # Toggle reset
-    if reset_all % 2 == 0:
-        year_range = [2018, 2023]
     
     man, woman = util.gender_data(data.df_cat, year_range)
     colors = 1.0
@@ -452,7 +448,7 @@ def update_pop(year_range, reset_all):
         #colors = colors - 0.2
 
     fig.update_layout(barmode='relative', 
-                  yaxis_autorange='reversed',
+                  #yaxis_autorange='reversed',
                   legend_orientation ='h',
                   bargap=0.01,
                   legend_x=-0.05, 
