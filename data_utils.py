@@ -104,25 +104,7 @@ def gender_data(df, year_range):
 #dd = pd.concat([dd, ddd.iloc[:, 1:]], axis=1)
 
 #%%
-def corona_data(df):
-    dd = df.loc[:, ['Name', 'Category', 'Year', 'Visit_Exhibition']]
-    dd = dd.pivot(index=['Name', 'Category'], columns=['Year']).reset_index()
-    idx = [dd.columns.get_level_values(0)[i]+'_'+str(dd.columns.get_level_values(1)[i]) for i in range(len(dd.columns))]
-    dd.columns = idx
-    dd = dd.fillna(0)
-    data = dd[['Name_', 'Category_']]
-    data['Before'] = dd['Visit_Exhibition_2018'] + dd['Visit_Exhibition_2019']
-    data['During'] = dd['Visit_Exhibition_2020'] + dd['Visit_Exhibition_2021']
-    data['After'] = dd['Visit_Exhibition_2022'] + dd['Visit_Exhibition_2023']
-    data['Before'] = data['Before'].astype('int')
-    data['During'] = data['During'].astype('int')
-    data['After'] = data['After'].astype('int')
-    data['average'] = dd[['Visit_Exhibition_2018', 'Visit_Exhibition_2019', 'Visit_Exhibition_2020', 'Visit_Exhibition_2021', 'Visit_Exhibition_2022', 'Visit_Exhibition_2023']].mean(axis=1)
-    data.columns = ['Name', 'Category', 'Before', 'During', 'After', 'Average']
-    scaler = MinMaxScaler(feature_range=(3,30))
-    data['scale'] = scaler.fit_transform(data['Average'].values.reshape(-1, 1))
-    data['scale'] = [math.ceil(x) for x in data['scale']]
-    return data
+
 
 def corona_data2(df):
     dd = df.loc[:, ['Name', 'Category', 'Year', 'Visit_Exhibition']]
