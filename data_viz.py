@@ -408,7 +408,7 @@ def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all)
     [Output(component_id="pop_graph", component_property="figure")],
     [Input(component_id='time_slider', component_property='value')]
 )
-def update_pop(year_range, reset_all):  
+def update_pop(year_range):  
     
     
     man, woman = util.gender_data(data.df_cat, year_range)
