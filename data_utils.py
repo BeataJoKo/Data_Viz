@@ -63,13 +63,18 @@ def name_agg(df, cloumn_name, year_range):
 #dd = name_agg(df_visit, 'Visit_Exhibition', [2018, 2023])
 
 #%%
-def year_agg(df, year_range):
+def year_agg(df, year_range, y_column):
     #dd = df.loc[(df['Year'] >= min(year_range)) & (df['Year'] <= max(year_range))]
-    dd = df.groupby(['Year'])[['Visit_Exhibition', 'Visit_Place', 'Opening_Time','Visitors_Exhibition_per_opening_hour']].sum().reset_index()
+    dd = df.groupby('Year', as_index=False)[y_column].sum()
+    #dd = df.groupby(['Year'])[['Visit_Exhibition', 'Visit_Place', 'Opening_Time','Visitors_Exhibition_per_opening_hour']].sum().reset_index()
     mintime = min(year_range)
     maxtime = max(year_range)
-    time = list(dd['Year'].unique())
+    time = [x for x in range(2018, 2024, 1)]
     time.sort()
+    for i in time:
+        if i not in dd['Year'].values:
+            dd.loc[len(dd)] = [i, 0]
+    dd = dd.sort_values('Year')
     color = [0.9 if (year >= mintime) & (year <= maxtime) else 0.3 for year in time]
     return dd, color
 
@@ -77,16 +82,13 @@ def year_agg(df, year_range):
 #dd = year_agg(df_visit[df_visit['Name'] == 'Ordrupgårdsamlingen'], [2018, 2021], 'Visit_Exhibition')
 
 #%%
-
-%%
-#%%
 def reshape_cat(df, sex, years):
     dd = df[df['Sex'] == sex].drop(['Sex'], axis=1)
     dd = dd[dd['Year'].isin(years)]
     dd = dd.pivot(index=['Year', 'Age'], columns=['Category']).reset_index()
     idx = [dd.columns.get_level_values(0)[i]+dd.columns.get_level_values(1)[i] for i in range(len(dd.columns))]
     dd.columns = [i.replace('Percent_', '') for i in idx]
-    dd = round(dd.groupby(['Age'])[['Kunstmuseum', 'Kulturhistorisk museum', 'Naturhistorisk museum', 'Blandet', 'Museumslignende institution']].mean().reset_index(), 1)
+    dd = round(dd.groupby(['Age'])[['Art museum', 'Cultural History Museum', 'Natural History Museum', 'Other']].mean().reset_index(), 1)
     dd = pd.concat([dd.iloc[1:], dd.iloc[:1]])
     return dd
 
@@ -122,9 +124,11 @@ def corona_data(df):
     data['scale'] = [math.ceil(x) for x in data['scale']]
     return data
 
+#%%
 #dd, ddd = gender_data(df_cat, [2018, 2021])
 #dd = pd.concat([dd, ddd.iloc[:, 1:]], axis=1)
 
+#%%
 def corona_data2(df):
     dd = df.loc[:, ['Name', 'Category', 'Year', 'Visit_Exhibition']]
     dd = dd.pivot(index=['Name', 'Category'], columns=['Year']).reset_index()
@@ -142,7 +146,6 @@ def corona_data2(df):
     scaler = MinMaxScaler(feature_range=(3, 30))
     data['scale'] = scaler.fit_transform(data[['Before Covid-19', 'During Covid-19', 'After Covid-19']].mean(axis=1).values.reshape(-1,1))
     data['scale'] = [math.ceil(x) for x in data['scale']]
-
     return data
 
 #%%
@@ -204,7 +207,7 @@ def teaching_data(df: pd.DataFrame, columns: list, sankey_link_weight: str, high
     weights = [round(x) for x in list(df_links["weight"])]
     
     # violet, grey, bordo, orange, red
-    colors = ['rgba(46,54,144,1)', 'rgba(56,62,66,1)', 'rgba(89,0,43,1)', 'rgba(250,175,67,1)', 'rgb(221,69,60,1)']
+    colors = ['rgba(46,54,144,1)', 'rgba(56,62,66,1)', 'rgba(89,0,43,1)', 'rgba(250,175,67,1)', 'rgb(190,58,49,1)'] #rgb(221,69,60)
     node_col = [colors[1] if x == 'No Teaching' else colors[0] if x == 'Teaching' else colors[2] for x in labels]
     link_col = ['rgba(56,62,66,0.2)' if val[0] == 0 else 'rgba(46,54,144,0.2)' for val in df_links["link"]]
     hov_link_col = ['rgba(56,62,66,0.8)' if val[0] == 0 else 'rgba(46,54,144,0.8)' for val in df_links["link"]]
