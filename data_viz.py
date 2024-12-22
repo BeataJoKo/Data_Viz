@@ -158,8 +158,8 @@ def reset_all_filters(reset_all):
      Input(component_id='map_category', component_property='value'),
      Input(component_id='reset_all', component_property='n_clicks'),
      Input(component_id='time_slider', component_property='value')],
-    [State(component_id='map_chart', component_property='figure')])
-
+    [State(component_id='map_chart', component_property='figure')]
+)
 def update_map(selected_map, map_category, reset_all,year_range, current_map_state):
     
     # Toggle reset
@@ -210,6 +210,7 @@ def update_map(selected_map, map_category, reset_all,year_range, current_map_sta
                     size=df_agg_year['scale'],
                     #colorsrc=str(df_agg_year['type']),
                     opacity=0.7,
+                    color='rgb(46,54,144)'
                 ),
                 customdata=df_agg_year[['Name', 'Category', 'Visit_Exhibition']].fillna(0).values,
                 hovertemplate=(
@@ -241,7 +242,7 @@ def update_map(selected_map, map_category, reset_all,year_range, current_map_sta
                 locations=df_agg_loc['Location'],
                 z=df_agg_loc['VisitCount'],
                 featureidkey='properties.kode',
-                colorscale=[[0, 'rgb(255, 255, 255)'], [1, 'rgb(245, 28, 28)']],
+                colorscale=[[0, 'rgb(255, 255, 255)'], [1, 'rgba(89,0,43,1)']],  #'rgb(245, 28, 28)'
                 zmin=0,
                 zmax=df_agg_loc['VisitCount'].max(),
                 marker=dict(opacity=0.7),
@@ -305,7 +306,7 @@ def update_url(clickData, map_cat, map_type, reset_all):
                 ]
     else:
         if clickData and 'points' in clickData:
-            select_museum = clickData['points'][0]['hovertext']
+            select_museum = clickData['points'][0]['customdata'][0]
             
             df = pd.DataFrame(data.df_visit[['Name', 'Kommune', 'Url', 'Category']].value_counts().reset_index(name='Counts'))
             df_filtered = df[df['Name'] == select_museum]
@@ -327,7 +328,6 @@ def update_url(clickData, map_cat, map_type, reset_all):
      Input(component_id='map_chart', component_property='clickData'),
      Input(component_id='reset_all', component_property='n_clicks')]
 )
-
 def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all):
     # Toggle reset
     if reset_all % 2 == 0:
@@ -342,6 +342,8 @@ def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all)
 
     selected_kommune = None
     selected_name = None
+    title = "All museums"
+    
     if clickData and 'points' in clickData:
         if map_type == 'kommune_loc':  # Choroplethmapbox case
             selected_kommune = clickData['points'][0]['hovertext']
@@ -350,38 +352,50 @@ def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all)
             print(f"Selected Name: {selected_name}")
 
     # Filter based on year, map_category and Municipality
-    df_filtered = data.df_visit[
-        (data.df_visit['Year'] >= year_range[0]) &
-        (data.df_visit['Year'] <= year_range[1])
-    ]
+    #df_filtered = data.df_visit[
+    #    (data.df_visit['Year'] >= year_range[0]) &
+    #    (data.df_visit['Year'] <= year_range[1])
+    #]
+    df_filtered = data.df_visit
     
     if map_category != "All museums":
         df_filtered = df_filtered[df_filtered['Category'] == map_category]
+        title = map_category
     if selected_kommune:  # Filter further if a kommune is clicked
         df_filtered = df_filtered[df_filtered['Kommune'] == selected_kommune]
+        title = selected_kommune
     if selected_name:  # Filter further if a museum is clicked
         df_filtered = df_filtered[df_filtered['Name'] == selected_name]
+        title = selected_name
 
     # Toggle between two metrics by checking if it has been clicked an even number of times
     y_column = 'Visit_Exhibition' if n_clicks % 2 == 0 else 'Visitors_Exhibition_per_opening_hour'
     y_title = 'Visit Exhibition' if n_clicks % 2 == 0 else 'Visitors per Opening Hour'
-    df_agg = df_filtered.groupby('Year', as_index=False)[y_column].sum()
+    # df_agg = df_filtered.groupby('Year', as_index=False)[y_column].sum()
+    df_agg, colors = util.year_agg(df_filtered, year_range, y_column)
     # Create the barplot
     fig = go.Figure(
         data=[go.Bar(
             x=df_agg['Year'], 
             y=df_agg[y_column],
-            hovertext=df_agg[y_column]
+            hovertext=df_agg[y_column],
+            marker={'opacity': colors},
+            hovertemplate=(
+            #"<b>Name:</b> %{hovertext}<br>" +  
+            f"<b>In </b>"+" %{x}<br>" +       
+            f"<b>{y_title} </b>"+" %{y}<br>" +       
+            "<extra></extra>"                
+            )
         )]
     )
     
     fig.update_traces(marker_color='rgb(89,0,43)', 
-                      marker_line_color='rgb(8,48,107)',
+                      #marker_line_color='rgb(8,48,107)',
                       marker_line_width=1.5) 
     
     fig.update_layout(
-        title_text=f'Yearly {y_title} for {map_category}',
-        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        title_text=f'Yearly {y_title} for {title}',
+        margin={"r": 0, "t": 50, "l": 0, "b": 0},
         plot_bgcolor='#efefef',
         paper_bgcolor='#efefef',
     )
@@ -451,19 +465,21 @@ def update_pop(year_range, reset_all):
     
     return [fig]
         
+
 @app.callback(
     [Output(component_id="scatterplot_corona", component_property="figure")],  
     [Input(component_id='corona_map', component_property='value'),
      Input(component_id='corona_map_2', component_property='value'),
-     Input(component_id='reset_all', component_property='n_clicks'),
-     ]
+     Input(component_id='reset_all', component_property='n_clicks')]
 )
 def update_corona(x_axis, y_axis, reset_all):
     
+    # Toggle reset
+    if reset_all % 2 == 0:
+        x_axis = 'Before'
+        y_axis = 'After'
     
     df = util.corona_data2(data.df_visit)
-    
-    
     max_limit = max(df[x_axis].max(), df[y_axis].max())
 
     # Create scatter plot
@@ -519,11 +535,9 @@ def update_corona(x_axis, y_axis, reset_all):
         plot_bgcolor='#efefef',
         paper_bgcolor='#efefef'
     )
+    
+    return [fig]
 
-    
-   
-    
-    return[fig]
 
 @app.callback(
     [Output(component_id="sanky_teaching", component_property="figure")],
@@ -553,9 +567,6 @@ def update_sankey(time_slider, map_cat, clickData, map_type, reset_all):
             select_museum = clickData['points'][0]['customdata'][0]
             print(f"Selected Name: {select_museum}")
 
-
-
-
     # Filter based on year, map_category and Municipality
     df_filtered = data.df_teaching[
         (data.df_teaching['Year'] >= time_slider[0]) &
@@ -574,8 +585,9 @@ def update_sankey(time_slider, map_cat, clickData, map_type, reset_all):
     if selected_kommune:  # Filter further if a kommune is clicked
         df_filtered = df_filtered[df_filtered['Kommune'] == selected_kommune]
         title = selected_kommune
-    if select_museum:  # Filter further if a museum is clicked
-        df_filtered = df_filtered[df_filtered['Name'] == select_museum]
+    # Dont make sense since it works with highlight
+    #if select_museum:  # Filter further if a museum is clicked
+    #    df_filtered = df_filtered[df_filtered['Name'] == select_museum]
         
     df = util.teaching_data(df_filtered, ['Teaching', 'Category'], 'Amount')
     
@@ -617,7 +629,6 @@ def update_sankey(time_slider, map_cat, clickData, map_type, reset_all):
                  )
 
     return [fig]
-
 
 
 @app.callback(
