@@ -452,19 +452,26 @@ def update_pop(year_range, reset_all):
     return [fig]
         
 @app.callback(
-    [Output(component_id="scatterplot_corona", component_property="figure")],
+    [Output(component_id="scatterplot_corona", component_property="figure"),
+     Output(component_id='corona_map', component_property='value'),  
+     Output(component_id='corona_map_2', component_property='value')],  
     [Input(component_id='corona_map', component_property='value'),
      Input(component_id='corona_map_2', component_property='value'),
-     Input(component_id='reset_all', component_property='n_clicks')]
+     Input(component_id='reset_all', component_property='n_clicks'),
+     Inout(coponent_id='map_category', component_property='value')]
 )
 def update_corona(x_axis, y_axis, reset_all):
+    default_x = 'Before Covid-19'
+    default_y = 'After Covid-19'
+
+    if reset_all is not None and reset_all % 2 == 0:
+        x_axis = default_x
+        y_axis = default_y
     
-    # Toggle reset
-    if reset_all % 2 == 0:
-        x_axis = 'Before'
-        y_axis = 'After'
     
     df = util.corona_data(data.df_visit)
+    
+    
     max_limit = max(df[x_axis].max(), df[y_axis].max())
 
     # Create scatter plot
@@ -492,7 +499,7 @@ def update_corona(x_axis, y_axis, reset_all):
 
     
     fig.update_layout(
-        title_text=f'Attendance: {x_axis} Covid-19 vs {y_axis} Covid-19',
+        title_text=f'Attendance: {x_axis} vs {y_axis}',
         shapes = [
     {
         'type': 'line',      
@@ -522,9 +529,7 @@ def update_corona(x_axis, y_axis, reset_all):
     )
 
     
-   
-
-    return [fig]
+    return[]
 
 @app.callback(
     [Output(component_id="sanky_teaching", component_property="figure")],
