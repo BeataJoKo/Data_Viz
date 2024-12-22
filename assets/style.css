@@ -37,7 +37,7 @@ button:hover{
    
     
 #title {
-    width: 100%;
+    width: auto;
     height: auto;
     display: grid;
     grid-template-columns: .70fr .30fr;
@@ -75,7 +75,7 @@ h1 {
        
     
 #top_info {
-    width: 100%;
+    width: auto;
     height: auto;
     display: grid;
     grid-template-columns: .60fr .40fr;
@@ -90,7 +90,7 @@ h1 {
       
 #map_container {
     grid-area: top1;
-    width: 100%;
+    width: auto;
     height: auto;
     display: grid;
     grid-template-columns: .1fr .4fr .4fr .1fr;
@@ -135,7 +135,7 @@ h1 {
       
 #myframe {
     grid-area: top2;
-    width: 100%;
+    width: auto;
     height: auto;
     display: grid;
     grid-template-columns: 1fr;
@@ -175,7 +175,7 @@ h1 {
    
   
 #midd_info {
-    width: 100%;
+    width: auto;
     height: auto;
     display: grid;
     grid-template-columns: .60fr .40fr;
@@ -190,7 +190,7 @@ h1 {
     
 #corona_container {
     grid-area: mid1;
-    width: 100%;
+    width: auto;
     height: auto;
     display: grid;
     padding: 1rem 2rem;
@@ -246,7 +246,7 @@ h1 {
   
 #bar_container {
     grid-area: mid2;
-    width: 100%;
+    width: auto;
     height: auto;
     padding: 0.5rem 1rem;
     display: grid;
@@ -274,6 +274,7 @@ h1 {
 #time_slider {
     width: 90%;
     padding: 1rem;
+    margin-left: 2rem;
     justify-self: center;
     align-self: begin;
     grid-area: bar3;
@@ -295,7 +296,7 @@ h1 {
   
   
 #bottom_info {
-    width: 100%;
+    width: auto;
     height: auto;
     display: grid;
     grid-template-columns: .50fr .50fr;
@@ -305,13 +306,19 @@ h1 {
     }   
     
 #sanky_teaching {
+    width: 90%;
     height: 25rem;
+    justify-self: center;
+    align-self: center;
     padding: 0.5rem 2rem 2rem 2rem;
     grid-area: bot1;
     }
     
 #pop_graph {
+    width: 90%;
     height: 25rem;
+    justify-self: center;
+    align-self: center;
     padding: 0.5rem 2rem 2rem 1rem;
     grid-area: bot2;
     }
@@ -320,7 +327,7 @@ h1 {
 /* ################### footer ########################*/   
    
 #footer {
-    width: 100%;
+    width: auto;
     height: auto;
     display: grid;
     padding: 2rem 0rem 1rem 0rem;
