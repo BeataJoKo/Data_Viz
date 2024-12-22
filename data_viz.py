@@ -452,9 +452,7 @@ def update_pop(year_range, reset_all):
     return [fig]
         
 @app.callback(
-    [Output(component_id="scatterplot_corona", component_property="figure"),
-     Output(component_id='corona_map', component_property='value'),  
-     Output(component_id='corona_map_2', component_property='value')],  
+    [Output(component_id="scatterplot_corona", component_property="figure")],  
     [Input(component_id='corona_map', component_property='value'),
      Input(component_id='corona_map_2', component_property='value'),
      Input(component_id='reset_all', component_property='n_clicks'),
