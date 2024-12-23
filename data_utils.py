@@ -2,7 +2,10 @@
 """
 Created on Mon Nov 18 14:35:44 2024
 
-@author: BeButton
+@author: 
+    Asger Møller Nielsen, 
+    Beata Joanna Morawska, 
+    Mathias Henssel Lund.
 """
 
 #%%
@@ -112,13 +115,6 @@ def gender_data(df, year_range, cat):
 #dd = pd.concat([dd, ddd.iloc[:, 1:]], axis=1)
 
 #%%
-
-
-#%%
-#dd, ddd = gender_data(df_cat, [2018, 2021])
-#dd = pd.concat([dd, ddd.iloc[:, 1:]], axis=1)
-
-#%%
 def corona_data2(df):
     dd = df.loc[:, ['Name', 'Category', 'Year', 'Visit_Exhibition']]
     dd = dd.pivot(index=['Name', 'Category'], columns=['Year']).reset_index()
@@ -139,7 +135,7 @@ def corona_data2(df):
     return data
 
 #%%
-#dd = corona_data(df_visit)
+#dd = corona_data2(df_visit)
 
 #%%
 # https://plotly.com/blog/sankey-diagrams/
@@ -210,7 +206,7 @@ def teaching_data(df: pd.DataFrame, columns: list, sankey_link_weight: str, high
         sources = sources + [link_mappings['Teaching'][dd['Teaching'][0]], link_mappings['Teaching'][dd['Teaching'][1]]]
         weights = weights + [round(dd['Amount'][0]), round(dd['Amount'][1])]
         node_col = node_col + [colors[1], colors[0], colors[2]]
-        link_col = link_col + [colors[4], colors[4]]
+        link_col = link_col + [colors[3], colors[3]]
         hov_link_col = hov_link_col + ['rgba(250,175,67,0.4)', 'rgba(250,175,67,0.4)']
         hov_data = hov_data + [highlight_data, highlight_data]
 
