@@ -34,7 +34,7 @@ maxtime = max(data.df_visit['Year'])
 #%% define Dash app layout 
 
 app.layout = html.Div([
-
+    
     html.Div(id='title', children=[
         html.H1("Museums' Visitors"),
         html.H4(f"Total visitors on exhibitions: {round(data.df_visit['Visit_Exhibition'].sum())}", 
@@ -43,35 +43,43 @@ app.layout = html.Div([
                          id='total_place')
         ]),
     
-    html.Div(id='top_info', children=[
+    html.Div(id='nav', children=[
+        html.Label('Choose map type:'),
+        html.Label('Choose museum category:'),
+        dcc.Dropdown(
+            id='map_type',
+            options=[
+                     {'label': 'Visitors on Exhibition in Museum', 'value': 'exhibition'},
+                     #{'label': 'Visitors of the Museum Location', 'value': 'location'},
+                     #{'label': 'Visitors on Exhibition in Municipality', 'value': 'kommune_ex'},
+                     {'label': 'Visitors of the Museum Location in Municipality', 'value': 'kommune_loc'}
+                     ],
+            value='exhibition',
+            clearable= False
+            ),
+        dcc.Dropdown(
+            id='map_category',
+            options= data.map_cat,
+            value='All museums',
+            #multi=True,
+            clearable= False
+            ),
+        html.Button("Reset", id = "reset_all", n_clicks=1),
+        html.Div(id='museum', children=None)
+        ]),
+    
+    html.Div(id='info_graphs', children=[
+        
+        # Top
+        # Map
         html.Div(id='map_container', children=[
-            html.Label('Choose map type:'),
-            html.Label('Choose museum category:'),
-            dcc.Dropdown(
-                id='map_type',
-                options=[
-                         {'label': 'Visitors on Exhibition in Museum', 'value': 'exhibition'},
-                         #{'label': 'Visitors of the Museum Location', 'value': 'location'},
-                         #{'label': 'Visitors on Exhibition in Municipality', 'value': 'kommune_ex'},
-                         {'label': 'Visitors of the Museum Location in Municipality', 'value': 'kommune_loc'}
-                         ],
-                value='exhibition',
-                clearable= False
-                ),
-            dcc.Dropdown(
-                id='map_category',
-                options= data.map_cat,
-                value='All museums',
-                #multi=True,
-                clearable= False
-                ),
-            html.Button("Reset", id = "reset_all", n_clicks=1),
             dcc.Graph(id='map_chart')
             ]),
-        html.Div(id='myframe', children=None)
-        ]), 
-    
-    html.Div(id='midd_info', children=[
+        # Iframe
+        html.Div(id='myframe', children=None),
+        
+        # Middle
+        # Corona
         html.Div(id='corona_container', children=[
             html.H4('Chose what to compare:'),
             html.Label('On the X-axis:'),
@@ -98,6 +106,7 @@ app.layout = html.Div([
                 ),
             dcc.Graph(id='scatterplot_corona')
             ]),
+        # Bar
         html.Div(id='bar_container', children=[
             html.Button("Toggle Metric", id="toggle_metric", n_clicks=0),  # Add Toggle Button - Mathias
             dcc.Graph(id='bar_visit'),
@@ -110,10 +119,11 @@ app.layout = html.Div([
                 marks={i: str(i) for i in range(mintime, maxtime+1, 1)}),
             dcc.Graph(id='distribution')
             ]),
-        ]),
         
-    html.Div(id='bottom_info', children=[
+        # Bottom
+        # Sankey
         dcc.Graph(id='sanky_teaching'),
+        # Distribution
         dcc.Graph(id='pop_graph')
         ]),
     
@@ -267,7 +277,9 @@ def update_map(selected_map, map_category, reset_all,year_range, current_map_sta
 
 
 @app.callback(
-    [Output('myframe', 'children')],
+    [Output('myframe', 'children'),
+     Output('museum', 'children'),
+     ],
     [Input(component_id='map_chart', component_property='clickData'),
      Input(component_id='map_category', component_property='value'),
      Input(component_id='map_type', component_property='value'),
@@ -287,8 +299,10 @@ def update_url(clickData, map_cat, map_type, reset_all):
         map_cat = map_cat + 's'
     elif map_cat == 'Other':
         map_cat = 'Other Categories of Museums'
+    mus = [
+        html.H3(f"{map_cat}")
+        ]
     child = [
-        html.H3(f"{map_cat}"),
         html.H5(""),
         html.Iframe(src="")
         ]
@@ -299,8 +313,10 @@ def update_url(clickData, map_cat, map_type, reset_all):
     if map_type != 'exhibition':
         if clickData and 'points' in clickData:
             selected_kommune = clickData['points'][0]['hovertext']
+            mus = [
+                html.H3(f"{map_cat}")
+                ]
             child = [
-                html.H3(f"{map_cat}"),
                 html.H5(f"In {selected_kommune} Municipality"),
                 html.Iframe(src="")
                 ]
@@ -310,13 +326,15 @@ def update_url(clickData, map_cat, map_type, reset_all):
             
             df = pd.DataFrame(data.df_visit[['Name', 'Kommune', 'Url', 'Category']].value_counts().reset_index(name='Counts'))
             df_filtered = df[df['Name'] == select_museum]
+            mus = [
+                html.H3(f"{select_museum}")
+                ]
             child = [
-                html.H3(f"{select_museum}"),
                 html.H5(f"{df_filtered['Category'].values[0]} in {df_filtered['Kommune'].values[0]} Municipality"),
                 html.Iframe(src=df_filtered['Url'].values[0])
                 ]
 
-    return [child]
+    return child, mus
 
 
 @app.callback(
