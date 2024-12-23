@@ -478,15 +478,15 @@ def update_corona(x_axis, y_axis, reset_all, clickData, map_type):
     selected_name = None
     
     if clickData and 'points' in clickData:
-        if map_type == 'kommune_loc':  # Choroplethmapbox case
+        if map_type == 'kommune_loc':  
             selected_kommune = clickData['points'][0]['hovertext']
-        elif map_type == 'exhibition':  # Scattermapbox case
+        elif map_type == 'exhibition':  
             selected_name = clickData['points'][0]['customdata'][0]
             
     
     df_filtered = data.df_visit
     
-    if selected_kommune:  # Filter further if a kommune is clicked
+    if selected_kommune:  
         df_filtered = df_filtered[df_filtered['Kommune'] == selected_kommune]
     
     
@@ -498,10 +498,10 @@ def update_corona(x_axis, y_axis, reset_all, clickData, map_type):
         selected_df = df[df['Name'] == selected_name]
         rest_df = df[df['Name'] != selected_name]
     else:
-        selected_df = pd.DataFrame()  # Empty DataFrame if no selection
+        selected_df = pd.DataFrame()  
         rest_df = df
 
-    # Create scatter plot
+    
     fig = go.Figure(
         
     )
@@ -536,9 +536,9 @@ def update_corona(x_axis, y_axis, reset_all, clickData, map_type):
                 mode='markers',
                 hovertext=selected_df['Name'],
                 marker=dict(
-                    color='rgb(255,0,0)',  # Highlight color
-                    size=selected_df['scale'] * 1.5,  # Larger size
-                    line=dict(color='rgb(0,0,0)', width=2)  # Border
+                    color='rgb(255,0,0)',  
+                    size=selected_df['scale'] * 1.5, 
+                    line=dict(color='rgb(0,0,0)', width=2)  
                 ),
                 name=selected_name,
                 hovertemplate=(
