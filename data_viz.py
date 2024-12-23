@@ -1,11 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Nov 17 13:35:51 2024
 
-@author: BeButton
-"""
-
-#%%
 
 import data_wrangling as data
 import data_utils as util
@@ -20,13 +13,11 @@ from collections import Counter
 import math
 import pandas as pd
 import numpy as np
-#from dash_bootstrap_templates import load_figure_template
 
-#%% create Dash app
 
 app = dash.Dash()
 
-#%% import data
+
 
 mintime = min(data.df_visit['Year'])
 maxtime = max(data.df_visit['Year'])
@@ -34,7 +25,7 @@ maxtime = max(data.df_visit['Year'])
 #%% define Dash app layout 
 
 app.layout = html.Div([
-    
+
     html.Div(id='title', children=[
         html.H1("Museums' Visitors"),
         html.H4(f"Total visitors on exhibitions: {round(data.df_visit['Visit_Exhibition'].sum())}", 
@@ -43,43 +34,35 @@ app.layout = html.Div([
                          id='total_place')
         ]),
     
-    html.Div(id='nav', children=[
-        html.Label('Choose map type:'),
-        html.Label('Choose museum category:'),
-        dcc.Dropdown(
-            id='map_type',
-            options=[
-                     {'label': 'Visitors on Exhibition in Museum', 'value': 'exhibition'},
-                     #{'label': 'Visitors of the Museum Location', 'value': 'location'},
-                     #{'label': 'Visitors on Exhibition in Municipality', 'value': 'kommune_ex'},
-                     {'label': 'Visitors of the Museum Location in Municipality', 'value': 'kommune_loc'}
-                     ],
-            value='exhibition',
-            clearable= False
-            ),
-        dcc.Dropdown(
-            id='map_category',
-            options= data.map_cat,
-            value='All museums',
-            #multi=True,
-            clearable= False
-            ),
-        html.Button("Reset", id = "reset_all", n_clicks=1),
-        html.Div(id='museum', children=None)
-        ]),
-    
-    html.Div(id='info_graphs', children=[
-        
-        # Top
-        # Map
+    html.Div(id='top_info', children=[
         html.Div(id='map_container', children=[
+            html.Label('Choose map type:'),
+            html.Label('Choose museum category:'),
+            dcc.Dropdown(
+                id='map_type',
+                options=[
+                         {'label': 'Visitors on Exhibition in Museum', 'value': 'exhibition'},
+                         #{'label': 'Visitors of the Museum Location', 'value': 'location'},
+                         #{'label': 'Visitors on Exhibition in Municipality', 'value': 'kommune_ex'},
+                         {'label': 'Visitors of the Museum Location in Municipality', 'value': 'kommune_loc'}
+                         ],
+                value='exhibition',
+                clearable= False
+                ),
+            dcc.Dropdown(
+                id='map_category',
+                options= data.map_cat,
+                value='All museums',
+                #multi=True,
+                clearable= False
+                ),
+            html.Button("Reset", id = "reset_all", n_clicks=1),
             dcc.Graph(id='map_chart')
             ]),
-        # Iframe
-        html.Div(id='myframe', children=None),
-        
-        # Middle
-        # Corona
+        html.Div(id='myframe', children=None)
+        ]), 
+    
+    html.Div(id='midd_info', children=[
         html.Div(id='corona_container', children=[
             html.H4('Chose what to compare:'),
             html.Label('On the X-axis:'),
@@ -106,7 +89,6 @@ app.layout = html.Div([
                 ),
             dcc.Graph(id='scatterplot_corona')
             ]),
-        # Bar
         html.Div(id='bar_container', children=[
             html.Button("Toggle Metric", id="toggle_metric", n_clicks=0),  # Add Toggle Button - Mathias
             dcc.Graph(id='bar_visit'),
@@ -119,11 +101,10 @@ app.layout = html.Div([
                 marks={i: str(i) for i in range(mintime, maxtime+1, 1)}),
             dcc.Graph(id='distribution')
             ]),
+        ]),
         
-        # Bottom
-        # Sankey
+    html.Div(id='bottom_info', children=[
         dcc.Graph(id='sanky_teaching'),
-        # Distribution
         dcc.Graph(id='pop_graph')
         ]),
     
@@ -277,9 +258,7 @@ def update_map(selected_map, map_category, reset_all,year_range, current_map_sta
 
 
 @app.callback(
-    [Output('myframe', 'children'),
-     Output('museum', 'children'),
-     ],
+    [Output('myframe', 'children')],
     [Input(component_id='map_chart', component_property='clickData'),
      Input(component_id='map_category', component_property='value'),
      Input(component_id='map_type', component_property='value'),
@@ -299,10 +278,8 @@ def update_url(clickData, map_cat, map_type, reset_all):
         map_cat = map_cat + 's'
     elif map_cat == 'Other':
         map_cat = 'Other Categories of Museums'
-    mus = [
-        html.H3(f"{map_cat}")
-        ]
     child = [
+        html.H3(f"{map_cat}"),
         html.H5(""),
         html.Iframe(src="")
         ]
@@ -313,10 +290,8 @@ def update_url(clickData, map_cat, map_type, reset_all):
     if map_type != 'exhibition':
         if clickData and 'points' in clickData:
             selected_kommune = clickData['points'][0]['hovertext']
-            mus = [
-                html.H3(f"{map_cat}")
-                ]
             child = [
+                html.H3(f"{map_cat}"),
                 html.H5(f"In {selected_kommune} Municipality"),
                 html.Iframe(src="")
                 ]
@@ -326,15 +301,13 @@ def update_url(clickData, map_cat, map_type, reset_all):
             
             df = pd.DataFrame(data.df_visit[['Name', 'Kommune', 'Url', 'Category']].value_counts().reset_index(name='Counts'))
             df_filtered = df[df['Name'] == select_museum]
-            mus = [
-                html.H3(f"{select_museum}")
-                ]
             child = [
+                html.H3(f"{select_museum}"),
                 html.H5(f"{df_filtered['Category'].values[0]} in {df_filtered['Kommune'].values[0]} Municipality"),
                 html.Iframe(src=df_filtered['Url'].values[0])
                 ]
 
-    return child, mus
+    return [child]
 
 
 @app.callback(
@@ -424,12 +397,17 @@ def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all)
 
 @app.callback(
     [Output(component_id="pop_graph", component_property="figure")],
-    [Input(component_id='time_slider', component_property='value')]
+    [Input(component_id='time_slider', component_property='value'),
+    Input(component_id='map_category', component_property='value'),
+    Input(component_id='map_type', component_property='value')]
 )
-def update_pop(year_range):  
+def update_pop(year_range, map_category, map_type):  
     
-    
-    man, woman = util.gender_data(data.df_cat, year_range)
+    selected_cat = None
+    if map_category != "All museums":
+        selected_cat = map_category
+
+    man, woman = util.gender_data(data.df_cat, year_range, selected_cat)
     colors = 1.0
     
     fig = go.Figure()
@@ -438,13 +416,13 @@ def update_pop(year_range):
             go.Bar(x=-man[col],
                    y =man['Age'],
                    orientation='h',
-                   name= 'Male: '+col,
+                   name= 'Male',
                    marker={
                        'opacity': colors,
                        'color': 'rgb(41,134,204)'
                            },
                    legendgroup="Male",
-                   showlegend = col == 'Art museum',
+                   showlegend = (col == man.columns[1]),
                    customdata=man[col],
                    hovertemplate = "%{y}: %{customdata}"))
        # colors = colors - 0.2
@@ -455,15 +433,16 @@ def update_pop(year_range):
             go.Bar(x= woman[col].values,
                    y=woman['Age'],
                    orientation='h',
-                   name='Female: '+col,
+                   name='Female',
                    marker={
                        'opacity': colors,
                        'color': 'rgb(202,71,117)'
                            },
                    legendgroup="Female",
-                   showlegend = col == 'Art museum',
+                   showlegend = (col == woman.columns[1]),
                    hovertemplate="%{y}: %{x}"))    
         #colors = colors - 0.2
+    title_text = 'Population Graph' if selected_cat is None else f'Population Graph for {selected_cat}'
 
     fig.update_layout(barmode='relative', 
                   #yaxis_autorange='reversed',
@@ -471,7 +450,7 @@ def update_pop(year_range):
                   bargap=0.01,
                   legend_x=-0.05, 
                   legend_y=1.11,
-                  title_text='Population Graph',
+                  title_text= title_text,
                   margin={"r": 0, "t": 80, "l": 0, "b": 0},
                   plot_bgcolor='#efefef',
                   paper_bgcolor = '#efefef'
@@ -484,41 +463,92 @@ def update_pop(year_range):
     [Output(component_id="scatterplot_corona", component_property="figure")],  
     [Input(component_id='corona_map', component_property='value'),
      Input(component_id='corona_map_2', component_property='value'),
-     Input(component_id='reset_all', component_property='n_clicks')]
+     Input(component_id='reset_all', component_property='n_clicks'),
+     Input(component_id='map_chart', component_property='clickData'),
+     Input(component_id='map_type', component_property='value')]
 )
-def update_corona(x_axis, y_axis, reset_all):
+def update_corona(x_axis, y_axis, reset_all, clickData, map_type):
     
     # Toggle reset
     if reset_all % 2 == 0:
         x_axis = 'Before'
         y_axis = 'After'
     
-    df = util.corona_data2(data.df_visit)
+    selected_kommune = None
+    selected_name = None
+    
+    if clickData and 'points' in clickData:
+        if map_type == 'kommune_loc':  # Choroplethmapbox case
+            selected_kommune = clickData['points'][0]['hovertext']
+        elif map_type == 'exhibition':  # Scattermapbox case
+            selected_name = clickData['points'][0]['customdata'][0]
+            
+    
+    df_filtered = data.df_visit
+    
+    if selected_kommune:  # Filter further if a kommune is clicked
+        df_filtered = df_filtered[df_filtered['Kommune'] == selected_kommune]
+    
+    
+    df = util.corona_data2(df_filtered)
+    print(df)
     max_limit = max(df[x_axis].max(), df[y_axis].max())
+
+    if selected_name:
+        selected_df = df[df['Name'] == selected_name]
+        rest_df = df[df['Name'] != selected_name]
+    else:
+        selected_df = pd.DataFrame()  # Empty DataFrame if no selection
+        rest_df = df
 
     # Create scatter plot
     fig = go.Figure(
-        data=[
-            go.Scatter(
-                x=df[x_axis].values,
-                y=df[y_axis].values,
-                mode='markers',
-                hovertext=df['Name'],
-                marker=dict(
-                    color='rgb(46,54,144)',
-                    size=df['scale'].values,
-                    showscale=False
-                ) ,
-                hovertemplate=(
-                "<b>Name:</b> %{hovertext}<br>" +  
-                f"<b>{x_axis}:</b>"+" %{x}<br>" +       
-                f"<b>{y_axis}:</b>"+" %{y}<br>" +       
-                "<extra></extra>"                
-                )
-            )
-        ]
+        
     )
 
+    fig.add_trace(
+        go.Scatter(
+            x=rest_df[x_axis],
+            y=rest_df[y_axis],
+            mode='markers',
+            hovertext=rest_df['Name'],
+            marker=dict(
+                color='rgb(46,54,144)',
+                size=rest_df['scale'],
+                showscale=False
+            ),
+            name='',
+            hovertemplate=(
+                "<b>Name:</b> %{hovertext}<br>"
+                f'<b>{x_axis}:</b>'+ '%{x}<br>'
+                f'<b>{y_axis}:</b>' +'%{y}<br>'
+                "<extra></extra>"
+            )
+        )
+    )
+
+    # Add highlighted point
+    if not selected_df.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=selected_df[x_axis],
+                y=selected_df[y_axis],
+                mode='markers',
+                hovertext=selected_df['Name'],
+                marker=dict(
+                    color='rgb(255,0,0)',  # Highlight color
+                    size=selected_df['scale'] * 1.5,  # Larger size
+                    line=dict(color='rgb(0,0,0)', width=2)  # Border
+                ),
+                name=selected_name,
+                hovertemplate=(
+                    "<b>Name:</b> %{hovertext}<br>"
+                    f'<b>{x_axis}:</b>' + '%{x}<br>'
+                    f'<b>{y_axis}:</b>' +'%{y}<br>'
+                    "<extra></extra>"
+                )
+            )
+        )
     
     fig.update_layout(
         title_text=f'Attendance: {x_axis} vs {y_axis}',
@@ -715,4 +745,3 @@ def update_dist(time_slider, map_cat, clickData, map_type, reset_all):
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8080)
-                        
