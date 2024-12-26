@@ -373,7 +373,7 @@ p:nth-child(4) {
     grid-area: foot4;
     }
 p:nth-child(5) {
-    text-align: center;
+    text-align: left;
     align-self: center;
     grid-area: foot6;
     }
