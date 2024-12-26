@@ -180,6 +180,8 @@ df_area_23 = pd.read_csv('museer/visit_to_ex_area_23.csv', sep=';', encoding="ut
 df_area = pd.read_csv('museer/visit_to_ex_area.csv', sep=';', encoding="utf8")
 df_purp_23 = pd.read_csv('museer/visit_to_ex_purpose_23.csv', sep=';', encoding="utf8")
 df_purp = pd.read_csv('museer/visit_to_ex_purpose.csv', sep=';', encoding="utf8")
+df_mat = pd.read_csv('archive/base_data_2018_2023.csv', sep=';')
+df_web = pd.read_excel('data/museum_websites.xlsx', sheet_name='cleaned')
 
 #%%
 df_art.columns = ['Age', 'Sex', 'Category', 2018, 2019, 2020, 2021, 2022]
@@ -305,7 +307,85 @@ df_type[2023] = df_type[2023].fillna(0)
 df_purp[2023] = df_purp[2023].fillna(0)
 
 #%%
+df = pd.merge(df, df_mat[['Name', 'Category', 'Year', 'Visitors_Exhibition_per_opening_hour']], how="left", on=['Name', 'Category', 'Year'])
+
+#%%
+for data_set in [df_type, df]:
+    data_set.loc[data_set["Category"] == "Kulturhistorisk museum", "Category"] = 'Cultural History Museum'
+    data_set.loc[data_set["Category"] == "Kunstmuseum", "Category"] = 'Art museum'
+    data_set.loc[data_set["Category"] == "Naturhistorisk museum", "Category"] = 'Natural History Museum'
+    data_set.loc[data_set["Category"] == "Blandet", "Category"] = 'Other'
+    data_set.loc[data_set["Category"] == "Museumslignende institution", "Category"] = 'Other'
+
+#%%
+df['Under_18_NO_teaching'] = df['Under_18_NO_teaching'].astype('str')
+df['Under_18_NO_teaching'] = df['Under_18_NO_teaching'].str.rstrip('*')
+df['Under_18_NO_teaching'] = df['Under_18_NO_teaching'].str.replace('nan', '0.0')
+df['Under_18_NO_teaching'] = [int(float(num)) for num in df['Under_18_NO_teaching']]
+df['Under_18_Teaching'] = df['Under_18_Teaching'].fillna(0)
+
+df['Visitors_Exhibition_per_opening_hour'] = df['Visitors_Exhibition_per_opening_hour'].fillna(0)
+
+#%%
+dd = df_type[df_type['Category'] == 'Other'].reset_index()
+
+#%%
+for year in [2018, 2019, 2020, 2021, 2022, 2023]:
+    ddd = dd.groupby(['Age', 'Sex'])[year].sum().reset_index()
+    for i, row in ddd.iterrows():
+        df_type.loc[(df_type["Age"] == row['Age']) & (df_type['Sex'] == row['Sex']) & (df_type['Category'] == 'Other'), year] = row[year]
+
+#%%
+df_type.drop_duplicates(inplace=True)   
+
+#%%
+dd = pd.DataFrame(df[['Name', 'Category', 'Year']].value_counts().reset_index(name='Counts'))
+dd = dd.sort_values(['Name', 'Year'])
+
+#%%
+df.loc[df["Name"] == "Alhambra Museet For Humor Og Satire", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Arkæologi Haderslev", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Bakkehuset", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Borgmestergården", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Cathrineminde Teglværk", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Den Selvejende Institution Østsjællands Museum", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Drøhses Hus", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Farvergården", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Fur Museum", "Category"] = 'Natural History Museum'
+df.loc[df["Name"] == "Fængselsmuseet", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Geomuseum Faxe", "Category"] = 'Natural History Museum'
+df.loc[df["Name"] == "Glyngøre Kulturstation", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Horsens Historiske Museum", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Horsens Kunstmuseum", "Category"] = 'Art museum'
+df.loc[df["Name"] == "Højer Mølle", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Johannes Larsen Museet", "Category"] = 'Art museum'
+df.loc[df["Name"] == "Koldkrigsmuseum Stevnsfort", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Kulturhistorie Aabenraa", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Kunstmuseet Brundlund Slot", "Category"] = 'Art museum'
+df.loc[df["Name"] == "Kunstmuseet I Tønder Kulturhistorie Tønder", "Category"] = 'Art museum'
+df.loc[df["Name"] == "Københavns Museum", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Museum Mors", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Museum Vestsjælland", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Naturhistorie Og Palæontologi", "Category"] = 'Natural History Museum'
+df.loc[df["Name"] == "Nyborg Slot", "Category"] = 'Other'
+df.loc[df["Name"] == "Skive Museum", "Category"] = 'Art museum'
+df.loc[df["Name"] == "Spøttrup Middelalderborg", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Storm P. Museet", "Category"] = 'Art museum'
+df.loc[df["Name"] == "Sønderborg Slot", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Thorvaldsens Museum", "Category"] = 'Art museum'
+
+df.loc[df["Name"] == "Historie & Kunst (Thorvaldsens Museum)", "Name"] = 'Thorvaldsens Museum'
+
+df.loc[df["Name"] == "Vejlemuseerne", "Category"] = 'Cultural History Museum'
+df.loc[df["Name"] == "Vikingemuseet Ladby", "Category"] = 'Cultural History Museum'
+
+#%%
+dd = pd.DataFrame(df[['Name','Category']].value_counts().reset_index(name='Counts'))
+
+#%%
 df.to_csv('base_data_2018_2023.csv', index=False)
+
+#%%
 df_art.to_csv('graphic_art_2018_2023.csv', index=False, encoding='utf8')
 df_area.to_csv('visit_area_2018_2023.csv', index=False, encoding='utf8')
 df_type.to_csv('museum_category_2018_2023.csv', index=False, encoding='utf8')
@@ -651,6 +731,19 @@ print(count['country'].eq('').sum())
 print(count['country'].unique())
 
 #%%
+count.loc[count["ZipCode"] == 6990, "Kommune"] = 'Holstebro Kommune'
+
+#%%
+count['Kommune'] = count['Kommune'].str.replace(' Kommune', '')
+count['Kommune'] = count['Kommune'].str.replace('s Regionskommune', '')
+count['Kommune'] = count['Kommune'].str.replace('Brønderslev', 'Brønderslev-Dronninglund')
+count['Kommune'] = count['Kommune'].str.replace('Københavns', 'København')
+count['Kommune'] = count['Kommune'].str.replace('Vesthimmerlands', 'Vesthimmerland')
+count['Kommune'] = count['Kommune'].str.replace('Aarhus', 'Århus')
+
+#%%
+
+#%%
 count.to_csv('mus_address.csv', index=False)
 
 #%%
@@ -660,6 +753,21 @@ print(df_art['Category'].unique())
 print(df_purp['Category'].unique())
 print(df_type['Category'].unique())
 
-#%%
+#%% 
 
+#%% Additional moved from wrangler
+
+#%%
+df_geo['GeoCode'] = 0
+#df_geo['Iso'] = ''
+
+#%%
+df_web = df_web[['Name', 'Url']]
+
+#%%
+for i, row in df_web.iterrows():
+    df_geo.loc[df_geo["Name"] == row['Name'], "Url"] = row['Url']
+ 
+
+#%%
 
