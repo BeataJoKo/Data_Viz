@@ -40,9 +40,9 @@ app.layout = html.Div([
     
     html.Div(id='title', children=[
         html.H1("Museums' Visitors"),
-        html.H4(f"Total visitors on exhibitions: {round(data.df_visit['Visit_Exhibition'].sum())}", 
+        html.H4(f"Total visitors on exhibitions: {round(data.df_visit['Visit_Exhibition'].sum()):,.0f}", 
                          id='total_exhibition'),
-        html.H6(f"Total visitors on museum locations: {round(data.df_visit['Visit_Place'].sum())}", 
+        html.H6(f"Total visitors on museum locations: {round(data.df_visit['Visit_Place'].sum()):,.0f}", 
                          id='total_place')
         ]),
     
@@ -227,9 +227,9 @@ def update_map(selected_map, map_category, reset_all,year_range, current_map_sta
                 ),
                 customdata=df_agg_year[['Name', 'Category', 'Visit_Exhibition']].fillna(0).values,
                 hovertemplate=(
-                    "<b>Name:</b> %{customdata[0]}<br>"
-                    "<b>Category:</b> %{customdata[1]}<br>"
-                    "<b>Visit Exhibition:</b> %{customdata[2]}<br>"
+                    "<b>Name: </b> %{customdata[0]}<br>"
+                    "<b>Category: </b> %{customdata[1]}<br>"
+                    "<b>Visit Exhibition: </b> %{customdata[2]:.3s}<br>"
                     "<extra></extra>"
                )
             )
@@ -258,9 +258,14 @@ def update_map(selected_map, map_category, reset_all,year_range, current_map_sta
                 colorscale=[[0, 'rgb(255, 255, 255)'], [1, 'rgba(89,0,43,1)']],  #'rgb(245, 28, 28)'
                 zmin=0,
                 zmax=df_agg_loc['VisitCount'].max(),
-                marker=dict(opacity=0.7),
+                marker=dict(opacity=.8),
                 hovertext=df_agg_loc['Kommune'],
-                name="Number of visitors in exibition"
+                name="Number of visitors in exibition",
+                hovertemplate=(
+                    "<b>%{hovertext}</b><br>"
+                    "Visitors at Museum Location:  %{z:.3s}<br>"
+                    "<extra></extra>"
+               )
             )
         )
 
@@ -390,7 +395,7 @@ def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all)
 
     # Toggle between two metrics by checking if it has been clicked an even number of times
     y_column = 'Visit_Exhibition' if n_clicks % 2 == 0 else 'Visitors_Exhibition_per_opening_hour'
-    y_title = 'Visit Exhibition' if n_clicks % 2 == 0 else 'Visitors per Opening Hour'
+    y_title = 'Visitors on Exhibition' if n_clicks % 2 == 0 else 'Visitors per Opening Hour'
     # df_agg = df_filtered.groupby('Year', as_index=False)[y_column].sum()
     df_agg, colors = util.year_agg(df_filtered, year_range, y_column)
     # Create the barplot
@@ -402,9 +407,9 @@ def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all)
             marker={'opacity': colors},
             hovertemplate=(
             #"<b>Name:</b> %{hovertext}<br>" +  
-            f"<b>In </b>"+" %{x}<br>" +       
-            f"<b>{y_title} </b>"+" %{y}<br>" +       
-            "<extra></extra>"                
+             "In <b> %{x}</b><br>"       
+            f"<b>{y_title}</b> "+ " %{y:.3s}<br>"     
+             "<extra></extra>"                
             )
         )]
     )
@@ -428,9 +433,20 @@ def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all)
     [Output(component_id="pop_graph", component_property="figure")],
     [Input(component_id='time_slider', component_property='value'),
     Input(component_id='map_category', component_property='value'),
-    Input(component_id='map_type', component_property='value')]
+    Input(component_id='map_type', component_property='value'),
+    Input(component_id='reset_all', component_property='n_clicks')]
 )
-def update_pop(year_range, map_category, map_type):  
+def update_pop(year_range, map_category, map_type, reset_all):  
+    
+    # Toggle reset
+    if reset_all % 2 == 0:
+        year_range = [2018, 2023]
+        map_category = "All museums"
+        
+    if year_range[0] == year_range[1]:
+        years = str(year_range[0])
+    else:
+        years = str(year_range[0]) + ' - ' + str(year_range[1])
     
     selected_cat = None
     if map_category != "All museums":
@@ -453,7 +469,9 @@ def update_pop(year_range, map_category, map_type):
                    legendgroup="Male",
                    showlegend = (col == man.columns[1]),
                    customdata=man[col],
-                   hovertemplate = "%{y}: %{customdata}"))
+                   hovertemplate = 
+                       "%{y}: %{customdata:.1f}%"
+                       f"<extra><b>Male: </b> {col}<br></extra>"))
        # colors = colors - 0.2
         
     colors = 1.0
@@ -468,13 +486,18 @@ def update_pop(year_range, map_category, map_type):
                        'color': 'rgb(202,71,117)'
                            },
                    legendgroup="Female",
+                   #hovertext=woman[col],
                    showlegend = (col == woman.columns[1]),
-                   hovertemplate="%{y}: %{x}"))    
+                   customdata=woman[col],
+                   hovertemplate = 
+                       "%{y}: %{customdata:.1f}%"
+                       f"<extra><b>Female: </b> {col}<br></extra>"))
         #colors = colors - 0.2
     title_text = 'Population Graph' if selected_cat is None else f'Population Graph for {selected_cat}'
+    title_text = title_text if year_range == [2018, 2023] else title_text + f' in {years}'
 
     fig.update_layout(barmode='relative', 
-                  #yaxis_autorange='reversed',
+                  yaxis_autorange='reversed',
                   legend_orientation ='h',
                   bargap=0.01,
                   legend_x=-0.05, 
@@ -494,17 +517,22 @@ def update_pop(year_range, map_category, map_type):
      Input(component_id='corona_map_2', component_property='value'),
      Input(component_id='reset_all', component_property='n_clicks'),
      Input(component_id='map_chart', component_property='clickData'),
-     Input(component_id='map_type', component_property='value')]
+     Input(component_id='map_type', component_property='value'),
+     Input(component_id='map_category', component_property='value'),]
 )
-def update_corona(x_axis, y_axis, reset_all, clickData, map_type):
+def update_corona(x_axis, y_axis, reset_all, clickData, map_type, map_category):
     
     # Toggle reset
     if reset_all % 2 == 0:
         x_axis = 'Before'
         y_axis = 'After'
+        selected_kommune = None
+        selected_name = None
+        clickData = None
     
     selected_kommune = None
     selected_name = None
+    title = f"Attendance: {x_axis} vs {y_axis}"
     
     if clickData and 'points' in clickData:
         if map_type == 'kommune_loc':  
@@ -515,8 +543,12 @@ def update_corona(x_axis, y_axis, reset_all, clickData, map_type):
     
     df_filtered = data.df_visit
     
+    if map_category != "All museums":
+        df_filtered = df_filtered[df_filtered['Category'] == map_category]
+        title = f"Attendance: {x_axis} vs {y_axis} for {map_category}"
     if selected_kommune:  
         df_filtered = df_filtered[df_filtered['Kommune'] == selected_kommune]
+        title = f"Attendance: {x_axis} vs {y_axis} in {selected_kommune}"
     
     
     df = util.corona_data2(df_filtered)
@@ -545,11 +577,11 @@ def update_corona(x_axis, y_axis, reset_all, clickData, map_type):
                 size=rest_df['scale'],
                 showscale=False
             ),
-            name='',
+            name='museums',
             hovertemplate=(
-                "<b>Name:</b> %{hovertext}<br>"
-                f'<b>{x_axis}:</b>'+ '%{x}<br>'
-                f'<b>{y_axis}:</b>' +'%{y}<br>'
+                "<b>Name: </b>%{hovertext}<br>"
+                f'<b>{x_axis}: </b>'+' %{x:.3s}<br>'
+                f'<b>{y_axis}: </b>'+' %{y:.3s}<br>'
                 "<extra></extra>"
             )
         )
@@ -565,22 +597,22 @@ def update_corona(x_axis, y_axis, reset_all, clickData, map_type):
                 hovertext=selected_df['Name'],
                 marker=dict(
                     color='rgba(250,175,67,1)',  
-                    size=selected_df['scale'] *1.5, 
+                    size=selected_df['scale'], # *1.5, 
                     line=dict(color='rgb(255,255,255)', width=1.5)  
                 ),
                 name=selected_name,
                 hovertemplate=(
-                    "<b>Name:</b> %{hovertext}<br>"
-                    f'<b>{x_axis}:</b>' + '%{x}<br>'
-                    f'<b>{y_axis}:</b>' +'%{y}<br>'
+                    "<b>Name: </b> %{hovertext}<br>"
+                    f'<b>{x_axis}: </b>'+' %{x:.3s}<br>'
+                    f'<b>{y_axis}: </b>'+' %{y:.3s}<br>'
                     "<extra></extra>"
                 )
             )
         )
     
     fig.update_layout(
-        title_text=f'Attendance: {x_axis} vs {y_axis}',
-    #    showlegend=False,
+        title_text=f'{title}',
+        #showlegend=False,
         shapes = [
     {
         'type': 'line',      
@@ -678,7 +710,7 @@ def update_sankey(time_slider, map_cat, clickData, map_type, reset_all):
                     line = dict(color = "black", width = 0.5),
                     label = df[0],
                     color = df[4], 
-                    hovertemplate='%{label} has groups of total size %{value}<extra></extra>'
+                    hovertemplate='%{label} has groups of total size %{value:.3s}<extra></extra>'
                     ),
                 link = dict(
                     source = df[2], # indices correspond to labels, eg A1, A2, A1, B1, ...
@@ -687,8 +719,10 @@ def update_sankey(time_slider, map_cat, clickData, map_type, reset_all):
                     color = df[5], 
                     #hovercolor = df[6],
                     customdata = df[7],
-                    hovertemplate='%{customdata}<br />'+
-                        'has %{target.label}<br />groups of total size %{value}<extra></extra>'
+                    hovertemplate=
+                        '%{customdata}<br>'
+                        'has %{target.label} groups of total size %{value:.3s}' 
+                        '<extra></extra>'
         ))])
     
     #fig.update_traces(link_hovercolor=df[6], selector=dict(type='sankey'))
@@ -758,8 +792,8 @@ def update_dist(time_slider, map_cat, clickData, map_type, reset_all):
                 #hovertext=df['Name'],
                 hovertemplate=(
                     #"<b>Name:</b> %{hovertext}<br>" +  
-                    f"<b>'Visitors': </b>"+" %{x}<br>" +       
-                    f"<b>'Count': </b>"+" %{y}<br>" +       
+                    "<b>Visitors: </b> %{x:.3s}<br>"       
+                    "<b>Count: </b> %{y}<br>"       
                     "<extra></extra>"                
                 )
                 )])
