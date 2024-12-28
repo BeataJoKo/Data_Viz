@@ -428,7 +428,6 @@ def update_bar(year_range, map_category, map_type,n_clicks, clickData,reset_all)
     return [fig]
 
 
-
 @app.callback(
     [Output(component_id="pop_graph", component_property="figure")],
     [Input(component_id='time_slider', component_property='value'),
@@ -797,6 +796,15 @@ def update_dist(time_slider, map_cat, clickData, map_type, reset_all):
                     "<extra></extra>"                
                 )
                 )])
+
+    fig.add_vline(x=df['Visit_Exhibition'].median(), 
+                  line_width=1.5, 
+                  line_dash="dash", 
+                  line_color="rgba(56,62,66,1)",
+                  annotation_text="median: " + f"{df['Visit_Exhibition'].median():,.0f}", 
+                  annotation_position="top right",
+                  annotation_font_size=12,
+                  annotation_font_color="rgba(56,62,66,1)")
         
     fig.update_layout(
         title_text=f'Distribution of visitors in {title} for {years}',
@@ -807,4 +815,4 @@ def update_dist(time_slider, map_cat, clickData, map_type, reset_all):
     return [fig]
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8080)
+    app.run_server(debug=False, port=8080)
