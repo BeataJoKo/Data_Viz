@@ -728,7 +728,7 @@ def update_sankey(time_slider, map_cat, clickData, map_type, reset_all):
     
     fig.update_layout(
                   title_text=f'Groups undrer 18 years in {title} for {years}',
-                  margin={"r": 0, "t": 50, "l": 0, "b": 0},
+                  margin={"r": 0, "t": 50, "l": 0, "b": 20},
                   #font_size=10,
                   plot_bgcolor='#efefef',
                   paper_bgcolor = '#efefef'
