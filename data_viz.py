@@ -28,6 +28,7 @@ import numpy as np
 #%% create Dash app
 
 app = dash.Dash()
+server = app.server
 
 #%% import data
 
