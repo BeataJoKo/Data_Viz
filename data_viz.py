@@ -15,11 +15,11 @@ import dash
 from dash import Dash, dcc, html
 # import dash_bootstrap_components as dbc
 # import dash_core_components as dcc
-# import plotly.express as px
+import plotly.express as px
 from dash.dependencies import Output, Input, State
 import plotly.graph_objects as go
 # from collections import Counter
-# import math
+import math
 import pandas as pd
 import numpy as np
 #from dash_bootstrap_templates import load_figure_template
@@ -27,7 +27,7 @@ import numpy as np
 #%% create Dash app
 
 app = dash.Dash()
-server = app.server
+# server = app.server
 
 #%% import data
 
