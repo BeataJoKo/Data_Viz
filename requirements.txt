@@ -15,5 +15,6 @@ regex==2024.11.6
 scikit-learn==1.0.1
 seaborn==0.13.2
 setuptools-scm==6.3.2
+setuptools < 65
 sklearn==0.0
 gunicorn
