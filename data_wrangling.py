@@ -6,10 +6,10 @@ Created on Sun Nov 17 13:43:55 2024
 """
 
 #%%
-# import os 
+import os 
 import geojson
 import pandas as pd
-# from datetime import datetime
+from datetime import datetime
 
 #%%
 with open('data/municipalities.geojson') as file:
