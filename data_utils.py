@@ -12,7 +12,7 @@ Created on Mon Nov 18 14:35:44 2024
 import math
 import numpy as np 
 import pandas as pd
-# import plotly.express as px
+import plotly.express as px
 from sklearn.preprocessing import MinMaxScaler
 
 #%%
